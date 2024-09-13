@@ -31,3 +31,4 @@ dependencyResolutionManagement {
 include(":composeApp")
 include(":ds")
 include(":network")
+include(":utils")

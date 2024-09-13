@@ -19,6 +19,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import com.rcudev.ds.theme.Typography
+import com.rcudev.stargazer.LocalImageLoader
 import com.rcudev.stargazer.common.di.ViewState
 import com.rcudev.stargazer.common.domain.model.Post
 
@@ -166,10 +167,12 @@ private fun Post(
 private fun PostImage(
     post: Post
 ) {
+    val imageLoader = LocalImageLoader.current
     var error by remember { mutableStateOf(false) }
 
     if (!error) {
         AsyncImage(
+            imageLoader = imageLoader,
             model = post.imageUrl,
             contentDescription = post.title,
             contentScale = ContentScale.Crop,

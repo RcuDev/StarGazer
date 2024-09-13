@@ -44,6 +44,7 @@ kotlin {
         commonMain.dependencies {
             implementation(projects.network)
             implementation(projects.ds)
+            implementation(projects.utils)
 
             implementation(compose.runtime)
             implementation(compose.foundation)

@@ -19,6 +19,9 @@ private const val BASE_URL = "https://api.spaceflightnewsapi.net/"
 
 abstract class KtorApi {
     val client = HttpClient {
+        install(HttpCache) {
+
+        }
         install(Logging) {
             logger = Logger.SIMPLE
             level = LogLevel.ALL
