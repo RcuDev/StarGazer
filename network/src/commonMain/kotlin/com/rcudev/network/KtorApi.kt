@@ -2,8 +2,6 @@ package com.rcudev.network
 
 import io.ktor.client.HttpClient
 import io.ktor.client.plugins.cache.HttpCache
-import io.ktor.client.plugins.cache.storage.CacheStorage
-import io.ktor.client.plugins.cache.storage.HttpCacheStorage
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.plugins.logging.LogLevel
 import io.ktor.client.plugins.logging.Logger
@@ -19,9 +17,7 @@ private const val BASE_URL = "https://api.spaceflightnewsapi.net/"
 
 abstract class KtorApi {
     val client = HttpClient {
-        install(HttpCache) {
-
-        }
+        install(HttpCache)
         install(Logging) {
             logger = Logger.SIMPLE
             level = LogLevel.ALL
