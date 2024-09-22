@@ -6,7 +6,7 @@ plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.jetbrainsCompose)
     alias(libs.plugins.compose.compiler)
-    kotlin("plugin.serialization") version "2.0.10"
+    kotlin("plugin.serialization") version "2.0.20"
 }
 
 kotlin {
@@ -29,7 +29,6 @@ kotlin {
     }
     
     sourceSets {
-        
         androidMain.dependencies {
             implementation(compose.preview)
             implementation(libs.androidx.activity.compose)
@@ -45,6 +44,7 @@ kotlin {
             implementation(projects.network)
             implementation(projects.ds)
             implementation(projects.utils)
+            implementation(projects.posts)
 
             implementation(compose.runtime)
             implementation(compose.foundation)
@@ -53,8 +53,7 @@ kotlin {
             implementation(compose.components.resources)
             implementation(compose.components.uiToolingPreview)
 
-            implementation(libs.androidx.lifecycle.viewmodel)
-            implementation(libs.androidx.lifecycle.runtime.compose)
+            // Serialization
             implementation(libs.kotlinx.serialization)
 
             // Coil

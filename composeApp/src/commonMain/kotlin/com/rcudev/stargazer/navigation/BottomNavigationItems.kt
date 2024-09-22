@@ -2,7 +2,7 @@ package com.rcudev.stargazer.navigation
 
 import kotlinx.serialization.Serializable
 
-internal val bottomNavDestinations = listOf<NavigationDestination>(Articles, Blogs, Reports, WebView(""))
+internal val bottomNavDestinations = listOf<NavigationDestination>(Posts, WebView(""))
 
 @Serializable
 internal sealed class NavigationDestination(
@@ -10,13 +10,7 @@ internal sealed class NavigationDestination(
 )
 
 @Serializable
-internal object Articles : NavigationDestination("Articles")
-
-@Serializable
-internal object Blogs : NavigationDestination("Blogs")
-
-@Serializable
-internal object Reports : NavigationDestination("Reports")
+internal object Posts : NavigationDestination("Posts")
 
 @Serializable
 internal data class WebView(val url: String) : NavigationDestination("WebView")
