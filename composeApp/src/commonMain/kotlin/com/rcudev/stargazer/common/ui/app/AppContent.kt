@@ -1,6 +1,7 @@
 package com.rcudev.stargazer.common.ui.app
 
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material3.Icon
@@ -10,6 +11,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -79,27 +81,31 @@ internal fun AppContent(
         modifier = Modifier
             .fillMaxSize()
     ) { innerPadding ->
-
-        NavGraph(
-            navController = navController,
-            innerPadding = innerPadding,
-            onFilterClick = {
-                showDropdown to newsSites
-            },
-            showSnackBar = { message ->
-                scope.launch {
-                    snackBarHostState.showSnackbar(
-                        message = message,
-                        duration = SnackbarDuration.Short
-                    )
+        Surface(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding)
+        ) {
+            NavGraph(
+                navController = navController,
+                onFilterClick = {
+                    showDropdown to newsSites
+                },
+                showSnackBar = { message ->
+                    scope.launch {
+                        snackBarHostState.showSnackbar(
+                            message = message,
+                            duration = SnackbarDuration.Short
+                        )
+                    }
+                },
+                openWebView = { url ->
+                    navController.navigate(WebView(url = url))
+                },
+                hideDropDown = {
+                    showDropdown = false
                 }
-            },
-            openWebView = { url ->
-                navController.navigate(WebView(url = url))
-            },
-            hideDropDown = {
-                showDropdown = false
-            }
-        )
+            )
+        }
     }
 }

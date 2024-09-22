@@ -1,5 +1,6 @@
 package com.rcudev.utils
 
+import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.platform.LocalConfiguration
@@ -15,10 +16,14 @@ actual fun getPlatformSize() = with(LocalConfiguration.current) {
 }
 
 @Composable
-actual fun getPlatformCachePath() = with(LocalContext.current) {
+actual fun getPlatformCachePath(): String = with(LocalContext.current) {
     val customCacheDir = File(cacheDir, IMAGE_CACHE_DIR)
     if (!customCacheDir.exists()) {
         customCacheDir.mkdirs()
     }
     customCacheDir.absolutePath
+}
+
+actual fun logMessage(tag: String, message: String) {
+    Log.d(tag, message)
 }

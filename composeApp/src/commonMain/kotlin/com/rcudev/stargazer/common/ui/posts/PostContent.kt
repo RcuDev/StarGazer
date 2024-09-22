@@ -102,8 +102,6 @@ private fun Success(
                 }
             )
             Post(
-                modifier = Modifier
-                    .animateItemPlacement(),
                 post = article,
                 onItemClick = onItemClick
             )

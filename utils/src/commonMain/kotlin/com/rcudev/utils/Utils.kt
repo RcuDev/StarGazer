@@ -11,3 +11,5 @@ expect fun getPlatformSize(): Size
 
 @Composable
 expect fun getPlatformCachePath(): String
+
+expect fun logMessage(tag: String, message: String)
