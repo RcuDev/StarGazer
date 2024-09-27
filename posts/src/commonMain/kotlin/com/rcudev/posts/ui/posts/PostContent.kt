@@ -22,6 +22,7 @@ import com.rcudev.ds.theme.Typography
 import com.rcudev.posts.model.Post
 import com.rcudev.posts.ui.ViewState
 import com.rcudev.utils.LocalImageLoader
+import com.rcudev.utils.logMessage
 
 @Composable
 internal fun PostContent(
@@ -175,6 +176,7 @@ private fun PostImage(
             contentDescription = post.title,
             contentScale = ContentScale.Crop,
             onError = {
+                logMessage("PostImage", it.result.throwable.message ?: "unknown")
                 error = true
             },
             modifier = Modifier

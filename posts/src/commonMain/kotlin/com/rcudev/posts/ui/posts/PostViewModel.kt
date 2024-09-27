@@ -3,7 +3,6 @@ package com.rcudev.posts.ui.posts
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.rcudev.posts.data.remote.InfoService
 import com.rcudev.posts.data.remote.PostService
 import com.rcudev.posts.model.Post
 import com.rcudev.posts.model.PostType
@@ -12,11 +11,10 @@ import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
 class PostViewModel(
-    private val infoService: InfoService,
     private val postService: PostService
 ) : ViewModel() {
 
-    protected val posts = MutableStateFlow<List<Post>?>(null)
+    private val posts = MutableStateFlow<List<Post>?>(null)
     private val loadingNextPage = MutableStateFlow(false)
     private val showError = MutableStateFlow(false)
     private val showLoadPageError = MutableStateFlow(false)
@@ -48,13 +46,6 @@ class PostViewModel(
 
     init {
         loadPosts()
-        viewModelScope.launch {
-            newsSites
-                .collectLatest {
-                    posts.update { null }
-                    loadPosts(newsSites = it)
-                }
-        }
     }
 
     private fun loadPosts(page: Int = 0, newsSites: String = "") = viewModelScope.launch {

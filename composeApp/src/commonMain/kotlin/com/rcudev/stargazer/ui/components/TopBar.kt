@@ -34,9 +34,9 @@ internal fun TopBar(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
             .statusBarsPadding()
-            .padding(top = 24.dp, start = 16.dp, end = 16.dp, bottom = 8.dp)
+            .padding(horizontal = 16.dp)
             .fillMaxWidth()
-            .heightIn(min = 56.dp)
+            .heightIn(min = 64.dp)
     ) {
         if (showBackButton) {
             Icon(

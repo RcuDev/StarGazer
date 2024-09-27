@@ -7,22 +7,27 @@ androidx-activityCompose = "1.9.2"
 androidx-lifecycle = "2.8.2"
 compose-plugin = "1.7.0-beta02"
 kotlin = "2.0.20"
-coil = "3.0.0-alpha06"
-koin = "3.5.0"
-koinCompose = "1.1.0"
+coil = "3.0.0-alpha10"
+coilKtor = "3.0.0-alpha08"
+koin = "4.0.0"
 ktor = "2.3.12"
 navigationCompose = "2.8.0-alpha10"
-kotlinx-serialization = "1.7.1"
+kotlinx-serialization = "1.7.3"
+dataStore = "1.1.1"
 
 [libraries]
 
 # Coil
 coil = { group = "io.coil-kt.coil3", name = "coil", version.ref = "coil" }
 coil-compose = { group = "io.coil-kt.coil3", name = "coil-compose", version.ref = "coil" }
-coil-ktor = { group = "io.coil-kt.coil3", name = "coil-network-ktor", version.ref = "coil" }
+coil-ktor = { group = "io.coil-kt.coil3", name = "coil-network-ktor", version.ref = "coilKtor" }
+
+# DataStore
+dataStore = { group = "androidx.datastore", name = "datastore", version.ref = "dataStore" }
+dataStore-preferences = { group = "androidx.datastore", name = "datastore-preferences", version.ref = "dataStore" }
 
 # Koin
-koin-compose = { group = "io.insert-koin", name = "koin-compose", version.ref = "koinCompose" }
+koin-compose = { group = "io.insert-koin", name = "koin-compose", version.ref = "koin" }
 koin-core = { group = "io.insert-koin", name = "koin-core", version.ref = "koin" }
 
 # Ktor
@@ -34,10 +39,8 @@ ktor-ios = { group = "io.ktor", name = "ktor-client-darwin", version.ref = "ktor
 ktor-serialization = { group = "io.ktor", name = "ktor-serialization-kotlinx-json", version.ref = "ktor" }
 
 kotlinx-serialization = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-serialization" }
-kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "androidx-activityCompose" }
-androidx-lifecycle-viewmodel = { group = "org.jetbrains.androidx.lifecycle", name = "lifecycle-viewmodel", version.ref = "androidx-lifecycle" }
-androidx-lifecycle-runtime-compose = { group = "org.jetbrains.androidx.lifecycle", name = "lifecycle-runtime-compose", version.ref = "androidx-lifecycle" }
+androidx-lifecycle-viewmodel = { group = "org.jetbrains.androidx.lifecycle", name = "lifecycle-viewmodel-compose", version.ref = "androidx-lifecycle" }
 navigation-compose = { module = "org.jetbrains.androidx.navigation:navigation-compose", version.ref = "navigationCompose" }
 
 [plugins]

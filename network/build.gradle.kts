@@ -34,9 +34,6 @@ kotlin {
             implementation(libs.ktor.logging)
             implementation(libs.ktor.serialization)
         }
-        commonTest.dependencies {
-            implementation(libs.kotlin.test)
-        }
     }
 }
 

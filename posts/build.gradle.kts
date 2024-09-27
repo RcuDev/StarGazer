@@ -1,5 +1,5 @@
-import org.gradle.kotlin.dsl.implementation
 import org.gradle.kotlin.dsl.sourceSets
+import org.jetbrains.kotlin.compose.compiler.gradle.ComposeFeatureFlag
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
@@ -32,9 +32,6 @@ kotlin {
 
     sourceSets {
         commonMain.dependencies {
-            implementation(projects.ds)
-            implementation(projects.utils)
-
             implementation(projects.network)
             implementation(projects.ds)
             implementation(projects.utils)
@@ -46,9 +43,8 @@ kotlin {
             implementation(compose.components.resources)
             implementation(compose.components.uiToolingPreview)
 
-            // Lifecycle
+            // ViewModel
             implementation(libs.androidx.lifecycle.viewmodel)
-            implementation(libs.androidx.lifecycle.runtime.compose)
 
             // Serialization
             implementation(libs.kotlinx.serialization)
@@ -61,14 +57,14 @@ kotlin {
             // Koin - DI
             implementation(libs.koin.compose)
             implementation(libs.koin.core)
-
-            // Navigation
-            implementation(libs.navigation.compose)
         }
     }
 
     composeCompiler {
-        enableStrongSkippingMode = true
+        featureFlags.addAll(
+            ComposeFeatureFlag.StrongSkipping,
+            ComposeFeatureFlag.OptimizeNonSkippingGroups
+        )
     }
     sourceSets.all {
         languageSettings.enableLanguageFeature("ExplicitBackingFields")
