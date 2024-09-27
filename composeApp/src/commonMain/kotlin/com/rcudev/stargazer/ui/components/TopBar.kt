@@ -18,9 +18,7 @@ import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -33,7 +31,7 @@ import androidx.datastore.preferences.core.edit
 import com.rcudev.ds.theme.Typography
 import com.rcudev.posts.model.PostType
 import com.rcudev.storage.POST_TYPE_FILTER
-import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import org.koin.compose.koinInject
 
@@ -94,11 +92,8 @@ private fun FlowRowScope.FilterChip(
     text: String,
 ) {
     val scope = rememberCoroutineScope()
-    val isSelected = remember { mutableStateOf(false) }
-
-    LaunchedEffect(Unit) {
-        isSelected.value = preferences.data.first()[POST_TYPE_FILTER] == text
-    }
+    var isSelected = preferences.data.map { prefs -> prefs[POST_TYPE_FILTER] }
+        .collectAsState(initial = PostType.ARTICLES.type)
 
     FilterChip(
         label = {
@@ -111,11 +106,10 @@ private fun FlowRowScope.FilterChip(
                     .fillMaxWidth()
             )
         },
-        selected = isSelected.value,
+        selected = isSelected.value == text,
         onClick = {
             scope.launch {
                 preferences.edit {
-                    isSelected.value = false
                     it[POST_TYPE_FILTER] = text
                 }
             }

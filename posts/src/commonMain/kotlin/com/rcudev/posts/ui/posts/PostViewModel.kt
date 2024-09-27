@@ -3,6 +3,7 @@ package com.rcudev.posts.ui.posts
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.edit
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.rcudev.posts.data.remote.PostService
@@ -55,7 +56,7 @@ class PostViewModel(
                 postType?.let {
                     posts.value = null
                     loadPosts(postType = postType)
-                }
+                } ?: preferences.edit { it[POST_TYPE_FILTER] = PostType.ARTICLES.type }
             }
         }
     }
