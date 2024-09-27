@@ -4,7 +4,7 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.androidLibrary)
-    kotlin("plugin.serialization") version "2.0.10"
+    kotlin("plugin.serialization") version "2.0.20"
 }
 
 kotlin {
@@ -33,9 +33,6 @@ kotlin {
             implementation(libs.ktor.core)
             implementation(libs.ktor.logging)
             implementation(libs.ktor.serialization)
-        }
-        commonTest.dependencies {
-            implementation(libs.kotlin.test)
         }
     }
 }

@@ -5,7 +5,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
-import java.io.File
 
 @Composable
 actual fun getPlatformSize() = with(LocalConfiguration.current) {
@@ -17,11 +16,7 @@ actual fun getPlatformSize() = with(LocalConfiguration.current) {
 
 @Composable
 actual fun getPlatformCachePath(): String = with(LocalContext.current) {
-    val customCacheDir = File(cacheDir, IMAGE_CACHE_DIR)
-    if (!customCacheDir.exists()) {
-        customCacheDir.mkdirs()
-    }
-    customCacheDir.absolutePath
+    cacheDir.resolve(IMAGE_CACHE_DIR).absolutePath
 }
 
 actual fun logMessage(tag: String, message: String) {
