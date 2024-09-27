@@ -3,7 +3,7 @@ package com.rcudev.stargazer
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import com.rcudev.ds.theme.UiTheme
-import com.rcudev.posts.di.diModules
+import com.rcudev.posts.di.getDiModules
 import com.rcudev.stargazer.ui.AppContent
 import com.rcudev.utils.GetImageLoader
 import com.rcudev.utils.LocalImageLoader
@@ -15,6 +15,9 @@ import org.koin.compose.KoinApplication
 @Composable
 @Preview
 internal fun App() {
+
+    val diModules = getDiModules()
+
     KoinApplication(application = {
         modules(diModules)
     }) {

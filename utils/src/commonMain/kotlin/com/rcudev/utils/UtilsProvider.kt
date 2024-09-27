@@ -12,8 +12,7 @@ import okio.Path.Companion.toPath
 
 // Composition locals
 val LocalScreenSize = compositionLocalOf<Size> { error("No screen size provided") }
-val LocalImageLoader =
-    compositionLocalOf<ImageLoader> { error("No image loader provided") }
+val LocalImageLoader = compositionLocalOf<ImageLoader> { error("No image loader provided") }
 
 @Composable
 fun GetImageLoader() = with(LocalPlatformContext.current) {

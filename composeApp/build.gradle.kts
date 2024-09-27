@@ -1,3 +1,4 @@
+import org.gradle.kotlin.dsl.implementation
 import org.jetbrains.kotlin.compose.compiler.gradle.ComposeFeatureFlag
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
@@ -46,6 +47,7 @@ kotlin {
             implementation(projects.ds)
             implementation(projects.utils)
             implementation(projects.posts)
+            implementation(projects.storage)
 
             implementation(compose.runtime)
             implementation(compose.foundation)
@@ -68,6 +70,9 @@ kotlin {
 
             // Navigation
             implementation(libs.navigation.compose)
+
+            // DataStore
+            implementation(libs.dataStore.preferences)
         }
     }
 

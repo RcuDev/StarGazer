@@ -1,3 +1,4 @@
+import org.gradle.kotlin.dsl.implementation
 import org.gradle.kotlin.dsl.sourceSets
 import org.jetbrains.kotlin.compose.compiler.gradle.ComposeFeatureFlag
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
@@ -35,6 +36,7 @@ kotlin {
             implementation(projects.network)
             implementation(projects.ds)
             implementation(projects.utils)
+            implementation(projects.storage)
 
             implementation(compose.runtime)
             implementation(compose.foundation)
@@ -57,6 +59,9 @@ kotlin {
             // Koin - DI
             implementation(libs.koin.compose)
             implementation(libs.koin.core)
+
+            // DataStore
+            implementation(libs.dataStore.preferences)
         }
     }
 
