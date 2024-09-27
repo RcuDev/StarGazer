@@ -12,7 +12,7 @@ class PostService : KtorApi() {
 
     suspend fun getArticles(postType: PostType, offset: Int, newsSites: String) = runCatching {
         client.get {
-            pathUrl(postType.type)
+            pathUrl(postType.type.lowercase())
             parameter("offset", offset)
             if (offset != 0) {
                 parameter("limit", 10)
@@ -20,7 +20,7 @@ class PostService : KtorApi() {
             if (newsSites.isNotEmpty()) {
                 parameter("news_site", newsSites)
             }
-        }.body<PostsResponse>().toPosts
+        }.body<PostsResponse>().toPosts(postType)
     }
 
 }

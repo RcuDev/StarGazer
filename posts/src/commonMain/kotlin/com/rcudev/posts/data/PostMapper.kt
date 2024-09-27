@@ -7,30 +7,30 @@ import com.rcudev.posts.data.model.PostsResponse
 import com.rcudev.posts.model.Event
 import com.rcudev.posts.model.Launch
 import com.rcudev.posts.model.Post
+import com.rcudev.posts.model.PostType
 import com.rcudev.posts.model.Posts
 
-internal val PostsResponse.toPosts
-    get() = Posts(
-        count = count,
-        next = next,
-        previous = previous,
-        results = results.map { it.toPost }
-    )
+internal fun PostsResponse.toPosts(postType: PostType) = Posts(
+    count = count,
+    next = next,
+    previous = previous,
+    results = results.map { it.toPost(postType) }
+)
 
-private val PostResponse.toPost
-    get() = Post(
-        id = id,
-        title = title,
-        url = url,
-        imageUrl = imageUrl.replace("http:", "https:"), // Only for images to load on iOS devices
-        newsSite = newsSite,
-        summary = summary,
-        publishedAt = publishedAt,
-        updatedAt = updatedAt,
-        featured = featured,
-        launches = launches.map { it.toLaunch },
-        events = events.map { it.toEvent }
-    )
+private fun PostResponse.toPost(postType: PostType) = Post(
+    id = id,
+    postType = postType,
+    title = title,
+    url = url,
+    imageUrl = imageUrl.replace("http:", "https:"), // Only for images to load on iOS devices
+    newsSite = newsSite,
+    summary = summary,
+    publishedAt = publishedAt,
+    updatedAt = updatedAt,
+    featured = featured,
+    launches = launches.map { it.toLaunch },
+    events = events.map { it.toEvent }
+)
 
 private val LaunchResponse.toLaunch
     get() = Launch(

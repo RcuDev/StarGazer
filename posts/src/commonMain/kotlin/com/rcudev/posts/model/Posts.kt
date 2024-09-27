@@ -13,6 +13,7 @@ data class Posts(
 @Serializable
 data class Post(
     val id: Int,
+    val postType: PostType,
     val title: String,
     val url: String,
     val imageUrl: String,

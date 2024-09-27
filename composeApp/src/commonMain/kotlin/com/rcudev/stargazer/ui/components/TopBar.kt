@@ -29,16 +29,13 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
-import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import com.rcudev.ds.theme.Typography
+import com.rcudev.posts.model.PostType
+import com.rcudev.storage.POST_TYPE_FILTER
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import org.koin.compose.koinInject
-
-private val ARTICLE_KEY = booleanPreferencesKey("articlesSelected")
-private val BlOGS_KEY = booleanPreferencesKey("blogsSelected")
-private val REPORTS_KEY = booleanPreferencesKey("reportsSelected")
 
 @Composable
 internal fun TopBar(
@@ -77,16 +74,13 @@ internal fun TopBar(
                     .weight(1f)
             ) {
                 FilterChip(
-                    text = "Articles",
-                    preferenceKey = ARTICLE_KEY
+                    text = PostType.ARTICLES.type
                 )
                 FilterChip(
-                    text = "Blogs",
-                    preferenceKey = BlOGS_KEY
+                    text = PostType.BLOGS.type
                 )
                 FilterChip(
-                    text = "Reports",
-                    preferenceKey = REPORTS_KEY
+                    text = PostType.REPORTS.type
                 )
             }
 
@@ -98,13 +92,12 @@ internal fun TopBar(
 private fun FlowRowScope.FilterChip(
     preferences: DataStore<Preferences> = koinInject(),
     text: String,
-    preferenceKey: Preferences.Key<Boolean>
 ) {
     val scope = rememberCoroutineScope()
     val isSelected = remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
-        isSelected.value = preferences.data.first()[preferenceKey] == true
+        isSelected.value = preferences.data.first()[POST_TYPE_FILTER] == text
     }
 
     FilterChip(
@@ -122,8 +115,8 @@ private fun FlowRowScope.FilterChip(
         onClick = {
             scope.launch {
                 preferences.edit {
-                    isSelected.value = !isSelected.value
-                    it[preferenceKey] = isSelected.value
+                    isSelected.value = false
+                    it[POST_TYPE_FILTER] = text
                 }
             }
         },

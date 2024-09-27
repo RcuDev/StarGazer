@@ -15,11 +15,13 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import com.rcudev.ds.theme.Typography
 import com.rcudev.posts.model.Post
+import com.rcudev.posts.model.PostType
 import com.rcudev.posts.ui.ViewState
 import com.rcudev.utils.LocalImageLoader
 import com.rcudev.utils.logMessage
@@ -149,6 +151,18 @@ private fun Post(
         )
         Spacer(modifier = Modifier.height(8.dp))
         Row {
+            val postTypeColor = when (post.postType) {
+                PostType.ARTICLES -> Color.Blue
+                PostType.BLOGS -> Color.Yellow
+                PostType.REPORTS -> Color.Gray
+            }
+
+            Text(
+                text = post.postType.name.toString(),
+                style = Typography.labelSmall,
+                color = postTypeColor,
+            )
+            Spacer(modifier = Modifier.width(8.dp))
             Text(
                 text = post.newsSite,
                 style = Typography.labelSmall,
