@@ -11,15 +11,18 @@ import com.rcudev.posts.model.Post
 import com.rcudev.posts.model.PostType
 import com.rcudev.posts.ui.ViewState
 import com.rcudev.storage.POST_TYPE_FILTER
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
+@OptIn(ExperimentalCoroutinesApi::class)
 class PostViewModel(
     private val preferences: DataStore<Preferences>,
-    private val postService: PostService
+    private val postService: PostService,
 ) : ViewModel() {
 
     private val posts = MutableStateFlow<List<Post>?>(null)
+    private val postTypeSelected = MutableStateFlow(PostType.ARTICLES)
     private val loadingNextPage = MutableStateFlow(false)
     private val showError = MutableStateFlow(false)
     private val showLoadPageError = MutableStateFlow(false)
@@ -51,13 +54,16 @@ class PostViewModel(
 
     init {
         viewModelScope.launch {
-            preferences.data.collectLatest { prefs ->
-                val postType = PostType.entries.find { it.type == prefs[POST_TYPE_FILTER] }
-                postType?.let {
-                    posts.value = null
-                    loadPosts(postType = postType)
-                } ?: preferences.edit { it[POST_TYPE_FILTER] = PostType.ARTICLES.type }
-            }
+            preferences.data
+                .distinctUntilChangedBy { it[POST_TYPE_FILTER] }
+                .collectLatest { prefs ->
+                    val postType = PostType.entries.find { it.type == prefs[POST_TYPE_FILTER] }
+                    postType?.let {
+                        postTypeSelected.value = postType
+                        posts.value = null
+                        loadPosts(postType = postType)
+                    } ?: preferences.edit { it[POST_TYPE_FILTER] = postTypeSelected.value.type }
+                }
         }
     }
 
@@ -86,6 +92,7 @@ class PostViewModel(
             nextPageToLoad.value += 1
             loadPosts(
                 page = nextPageToLoad.value,
+                postType = postTypeSelected.value,
                 newsSites = newsSites.value
             )
         }
