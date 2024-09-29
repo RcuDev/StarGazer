@@ -23,7 +23,7 @@ import org.koin.compose.koinInject
 @Composable
 @Preview
 internal fun App(
-    finishSplash: () -> Unit = {}
+    finishSplash: () -> Unit
 ) {
 
     val diModules = getDiModules()
