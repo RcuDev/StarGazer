@@ -54,15 +54,19 @@ internal fun AppContent() {
             )
         },
         floatingActionButton = {
-            FloatingActionButton(
-                content = {
-                    Icon(
-                        Icons.Filled.Settings,
-                        contentDescription = "Settings"
-                    )
-                },
-                onClick = {}
-            )
+            if (!showBackButton) {
+                FloatingActionButton(
+                    content = {
+                        Icon(
+                            Icons.Filled.Settings,
+                            contentDescription = "Settings"
+                        )
+                    },
+                    onClick = {
+                        // TODO: Navigate to settings
+                    }
+                )
+            }
         },
         modifier = Modifier
             .fillMaxSize()

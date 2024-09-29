@@ -92,7 +92,7 @@ private fun FlowRowScope.FilterChip(
     text: String,
 ) {
     val scope = rememberCoroutineScope()
-    var isSelected = preferences.data.map { prefs -> prefs[POST_TYPE_FILTER] }
+    val isSelected = preferences.data.map { prefs -> prefs[POST_TYPE_FILTER] }
         .collectAsState(initial = PostType.ARTICLES.type)
 
     FilterChip(
