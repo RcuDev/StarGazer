@@ -61,7 +61,7 @@ internal fun TopBar(
         }
 
         Text(
-            text = "StarGazer",
+            text = "Star Gazer",
             style = Typography.titleLarge
         )
 
