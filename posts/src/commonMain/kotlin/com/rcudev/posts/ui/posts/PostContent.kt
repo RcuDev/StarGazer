@@ -30,22 +30,18 @@ internal fun PostContent(
     loadNextPage: () -> Unit,
     showSnackBar: () -> Unit,
     onItemClick: (String) -> Unit,
-    finishSplash: () -> Unit = {}
 ) {
     when (viewState) {
         ViewState.Loading -> Loading()
         ViewState.Error -> Error()
         is ViewState.Empty -> Empty(viewState.message)
-        is ViewState.Success -> {
-            Success(
-                posts = viewState.posts,
-                loadingNextPage = viewState.loadingNextPage,
-                loadNextPage = loadNextPage,
-                showSnackBar = showSnackBar,
-                onItemClick = onItemClick
-            )
-            finishSplash()
-        }
+        is ViewState.Success -> Success(
+            posts = viewState.posts,
+            loadingNextPage = viewState.loadingNextPage,
+            loadNextPage = loadNextPage,
+            showSnackBar = showSnackBar,
+            onItemClick = onItemClick
+        )
     }
 }
 

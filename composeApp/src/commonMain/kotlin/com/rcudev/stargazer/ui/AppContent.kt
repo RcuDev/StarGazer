@@ -8,6 +8,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
@@ -18,16 +19,22 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.edit
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.rcudev.stargazer.navigation.NavGraph
 import com.rcudev.stargazer.navigation.WebView
 import com.rcudev.stargazer.ui.components.TopBar
+import com.rcudev.storage.DARK_MODE
 import kotlinx.coroutines.launch
+import org.koin.compose.koinInject
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 internal fun AppContent(
+    preferences: DataStore<Preferences> = koinInject(),
     finishSplash: () -> Unit = {}
 ) {
 
@@ -58,6 +65,7 @@ internal fun AppContent(
         floatingActionButton = {
             if (!showBackButton) {
                 FloatingActionButton(
+                    containerColor = MaterialTheme.colorScheme.surfaceContainer,
                     content = {
                         Icon(
                             Icons.Filled.Settings,
@@ -66,6 +74,11 @@ internal fun AppContent(
                     },
                     onClick = {
                         // TODO: Navigate to settings
+                        scope.launch {
+                            preferences.edit {
+                                it[DARK_MODE] = it[DARK_MODE] != true
+                            }
+                        }
                     }
                 )
             }
@@ -73,7 +86,6 @@ internal fun AppContent(
         modifier = Modifier
             .fillMaxSize()
     ) { innerPadding ->
-
         Box(
             modifier = Modifier
                 .fillMaxSize()
