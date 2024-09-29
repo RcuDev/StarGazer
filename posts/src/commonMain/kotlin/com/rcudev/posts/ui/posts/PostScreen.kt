@@ -7,6 +7,7 @@ internal fun PostScreen(
     vm: PostViewModel,
     showSnackBar: (String) -> Unit,
     onPostClick: (String) -> Unit,
+    finishSplash: () -> Unit = {}
 ) {
 
     val viewState by vm.state.collectAsState()
@@ -17,6 +18,7 @@ internal fun PostScreen(
         showSnackBar = {
             showSnackBar("Loading more post")
         },
-        onItemClick = onPostClick
+        onItemClick = onPostClick,
+        finishSplash = finishSplash
     )
 }

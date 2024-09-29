@@ -22,7 +22,9 @@ import org.koin.compose.koinInject
 
 @Composable
 @Preview
-internal fun App() {
+internal fun App(
+    finishSplash: () -> Unit = {}
+) {
 
     val diModules = getDiModules()
 
@@ -39,7 +41,9 @@ internal fun App() {
         ) {
             CompositionLocalProvider(LocalScreenSize provides getPlatformSize()) {
                 CompositionLocalProvider(LocalImageLoader provides GetImageLoader()) {
-                    AppContent()
+                    AppContent(
+                        finishSplash = finishSplash
+                    )
                 }
             }
         }

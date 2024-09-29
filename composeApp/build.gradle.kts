@@ -35,6 +35,9 @@ kotlin {
             implementation(compose.preview)
             implementation(libs.androidx.activity.compose)
 
+            // Splash
+            implementation(libs.androidx.splash)
+
             // Ktor
             implementation(libs.ktor.android)
         }

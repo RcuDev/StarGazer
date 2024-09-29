@@ -27,7 +27,9 @@ import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-internal fun AppContent() {
+internal fun AppContent(
+    finishSplash: () -> Unit = {}
+) {
 
     val scope = rememberCoroutineScope()
     val navController = rememberNavController()
@@ -86,7 +88,8 @@ internal fun AppContent() {
                             duration = SnackbarDuration.Short
                         )
                     }
-                }
+                },
+                finishSplash = finishSplash
             )
         }
     }
