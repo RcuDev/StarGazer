@@ -31,7 +31,6 @@ import com.rcudev.storage.DARK_MODE
 import kotlinx.coroutines.launch
 import org.koin.compose.koinInject
 
-@OptIn(ExperimentalLayoutApi::class)
 @Composable
 internal fun AppContent(
     preferences: DataStore<Preferences> = koinInject(),
