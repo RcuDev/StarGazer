@@ -2,6 +2,7 @@
 
 package com.rcudev.stargazer.ui.components
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
@@ -15,7 +16,9 @@ import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.FilterChip
+import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -45,10 +48,16 @@ internal fun TopBar(
         horizontalArrangement = Arrangement.spacedBy(16.dp),
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
+            .shadow(
+                elevation = 6.dp,
+                spotColor = MaterialTheme.colorScheme.onSurface
+            )
+            .background(MaterialTheme.colorScheme.secondaryContainer)
             .statusBarsPadding()
             .padding(horizontal = 16.dp)
             .fillMaxWidth()
             .heightIn(min = 64.dp)
+
     ) {
         if (showBackButton) {
             Icon(
@@ -107,6 +116,9 @@ private fun FlowRowScope.FilterChip(
                     .fillMaxWidth()
             )
         },
+        colors = FilterChipDefaults.filterChipColors().copy(
+            selectedContainerColor = MaterialTheme.colorScheme.inversePrimary
+        ),
         selected = isSelected.value == text,
         onClick = {
             scope.launch {

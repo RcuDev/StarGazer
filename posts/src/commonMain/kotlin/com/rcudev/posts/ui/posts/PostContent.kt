@@ -9,6 +9,7 @@ import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
@@ -91,6 +92,8 @@ private fun Success(
 
     LazyColumn(
         state = listState,
+        contentPadding = PaddingValues(16.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
         itemsIndexed(
             items = posts,
@@ -125,9 +128,9 @@ private fun Post(
     post: Post,
     onItemClick: (String) -> Unit
 ) {
-    Column(
+    Card(
         modifier = modifier
-            .padding(16.dp)
+            .clip(RoundedCornerShape(4.dp))
             .clickable(
                 onClick = { onItemClick(post.url) },
                 indication = null,
@@ -138,31 +141,36 @@ private fun Post(
             post
         )
         Spacer(modifier = Modifier.height(8.dp))
-        Text(
-            text = post.title,
-            style = Typography.titleLarge
-        )
-        Spacer(modifier = Modifier.height(8.dp))
-        Text(
-            text = post.summary,
-            style = Typography.bodyMedium,
-        )
-        Spacer(modifier = Modifier.height(8.dp))
-        Row {
+        Column(
+            modifier = Modifier.padding(8.dp)
+        ) {
             Text(
-                text = post.postType.name.toString(),
-                style = Typography.labelSmall,
+                text = post.title,
+                style = Typography.titleLarge
             )
-            Spacer(modifier = Modifier.width(8.dp))
+            Spacer(modifier = Modifier.height(8.dp))
             Text(
-                text = post.newsSite,
-                style = Typography.labelSmall,
+                text = post.summary,
+                style = Typography.bodyMedium,
             )
-            Spacer(modifier = Modifier.weight(1f))
-            Text(
-                text = post.publishedAt,
-                style = Typography.labelSmall,
-            )
+            Spacer(modifier = Modifier.height(8.dp))
+            Row {
+                Text(
+                    text = post.postType.name.toString(),
+                    style = Typography.labelSmall,
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(
+                    text = post.newsSite,
+                    style = Typography.labelSmall,
+                )
+                Spacer(modifier = Modifier.weight(1f))
+                Text(
+                    text = post.publishedAt,
+                    style = Typography.labelSmall,
+                )
+            }
+            Spacer(modifier = Modifier.height(4.dp))
         }
     }
 }
@@ -187,7 +195,6 @@ private fun PostImage(
             modifier = Modifier
                 .fillMaxWidth()
                 .aspectRatio(16f / 9)
-                .clip(RoundedCornerShape(8.dp))
         )
     }
 }
