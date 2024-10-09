@@ -12,6 +12,7 @@ import com.rcudev.posts.ui.webview.WebViewRoute
 internal fun NavGraph(
     navController: NavHostController,
     showSnackBar: (String) -> Unit,
+    finishSplash: () -> Unit = {}
 ) {
     NavHost(
         navController = navController,
@@ -22,7 +23,8 @@ internal fun NavGraph(
                 showSnackBar = showSnackBar,
                 onPostClick = { url ->
                     navController.navigate(WebView(url = url))
-                }
+                },
+                finishSplash = finishSplash
             )
         }
         composable<WebView> { entry ->

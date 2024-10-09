@@ -29,7 +29,7 @@ internal fun PostContent(
     viewState: ViewState,
     loadNextPage: () -> Unit,
     showSnackBar: () -> Unit,
-    onItemClick: (String) -> Unit
+    onItemClick: (String) -> Unit,
 ) {
     when (viewState) {
         ViewState.Loading -> Loading()
