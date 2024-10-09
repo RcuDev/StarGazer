@@ -17,6 +17,7 @@ internal const val DATA_STORE_FILE_NAME = "star_gazer.preferences_pb"
 // Preferences keys
 val DARK_MODE = booleanPreferencesKey("dark_mode")
 val POST_TYPE_FILTER = stringPreferencesKey("post_type_filter")
+val NEWS_SITES_FILTER = stringPreferencesKey("news_sites_filter")
 
 @Composable
 internal expect fun dataStorePreferencesPath(): String

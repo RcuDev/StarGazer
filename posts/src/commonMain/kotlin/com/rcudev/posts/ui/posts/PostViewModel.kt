@@ -6,10 +6,12 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.rcudev.posts.data.remote.InfoService
 import com.rcudev.posts.data.remote.PostService
 import com.rcudev.posts.model.Post
 import com.rcudev.posts.model.PostType
 import com.rcudev.posts.ui.ViewState
+import com.rcudev.storage.NEWS_SITES_FILTER
 import com.rcudev.storage.POST_TYPE_FILTER
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.*
@@ -19,6 +21,7 @@ import kotlinx.coroutines.launch
 class PostViewModel(
     private val preferences: DataStore<Preferences>,
     private val postService: PostService,
+    private val infoService: InfoService
 ) : ViewModel() {
 
     private val posts = MutableStateFlow<List<Post>?>(null)
@@ -27,7 +30,8 @@ class PostViewModel(
     private val showError = MutableStateFlow(false)
     private val showLoadPageError = MutableStateFlow(false)
     private val nextPageToLoad = mutableIntStateOf(0)
-    val newsSites = MutableStateFlow("")
+    val newsSites = MutableStateFlow(emptyList<String>())
+    val newsSitesSelected = MutableStateFlow("")
 
     val state = combine(
         posts,
@@ -37,7 +41,7 @@ class PostViewModel(
     ) { posts, loadingPage, showError, showLoadPageError ->
         when {
             showError -> ViewState.Error
-            posts?.isEmpty() == true -> ViewState.Empty("No articles found")
+            posts?.isEmpty() == true -> ViewState.Empty("No post found")
             posts?.isNotEmpty() == true -> ViewState.Success(
                 posts = posts,
                 loadingNextPage = loadingPage,
@@ -54,14 +58,20 @@ class PostViewModel(
 
     init {
         viewModelScope.launch {
+            loadInfo()
             preferences.data
-                .distinctUntilChangedBy { it[POST_TYPE_FILTER] }
+                .distinctUntilChangedBy { it }
                 .collectLatest { prefs ->
+                    val newsSitesFilter = prefs[NEWS_SITES_FILTER]
                     val postType = PostType.entries.find { it.type == prefs[POST_TYPE_FILTER] }
                     postType?.let {
+                        newsSitesSelected.value = newsSitesFilter.orEmpty()
                         postTypeSelected.value = postType
                         posts.value = null
-                        loadPosts(postType = postType)
+                        loadPosts(
+                            postType = postTypeSelected.value,
+                            newsSites = newsSitesSelected.value
+                        )
                     } ?: preferences.edit { it[POST_TYPE_FILTER] = postTypeSelected.value.type }
                 }
         }
@@ -86,6 +96,17 @@ class PostViewModel(
         )
     }
 
+    private fun loadInfo() = viewModelScope.launch {
+        infoService.getInfo()
+            .fold(
+                onSuccess = { data ->
+                    newsSites.value = data.newsSites
+                }, onFailure = {
+                    // No-op
+                }
+            )
+    }
+
     fun loadNextPage() {
         if (!loadingNextPage.value) {
             loadingNextPage.value = true
@@ -93,7 +114,7 @@ class PostViewModel(
             loadPosts(
                 page = nextPageToLoad.value,
                 postType = postTypeSelected.value,
-                newsSites = newsSites.value
+                newsSites = newsSitesSelected.value
             )
         }
     }

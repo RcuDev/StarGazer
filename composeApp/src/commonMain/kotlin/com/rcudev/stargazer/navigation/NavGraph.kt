@@ -12,6 +12,8 @@ import com.rcudev.posts.ui.webview.WebViewRoute
 internal fun NavGraph(
     navController: NavHostController,
     showSnackBar: (String) -> Unit,
+    showSettings: () -> Boolean,
+    hideSettings: () -> Unit,
     finishSplash: () -> Unit = {}
 ) {
     NavHost(
@@ -21,6 +23,8 @@ internal fun NavGraph(
         composable<Posts> {
             PostRoute(
                 showSnackBar = showSnackBar,
+                showSettings = showSettings,
+                hideSettings = hideSettings,
                 onPostClick = { url ->
                     navController.navigate(WebView(url = url))
                 },
