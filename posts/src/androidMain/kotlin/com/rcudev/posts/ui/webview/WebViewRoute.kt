@@ -16,7 +16,8 @@ import io.ktor.http.*
 @SuppressLint("SetJavaScriptEnabled")
 @Composable
 actual fun WebViewRoute(
-    url: String
+    url: String,
+    notAuthorizedHost: () -> Unit
 ) {
     if (url.isEmpty()) {
         EmptyWebView()
@@ -37,7 +38,7 @@ actual fun WebViewRoute(
                     useWideViewPort = true
                     layoutAlgorithm = WebSettings.LayoutAlgorithm.NORMAL
                 }
-                webViewClient = SGWebViewClient(Url(url))
+                webViewClient = SGWebViewClient(Url(url), notAuthorizedHost)
             }
         },
         update = {
@@ -48,9 +49,10 @@ actual fun WebViewRoute(
     )
 }
 
-private class SGWebViewClient(val url: Url) : WebViewClient() {
+private class SGWebViewClient(val url: Url, val notAuthorizedHost: () -> Unit) : WebViewClient() {
     override fun shouldOverrideUrlLoading(view: WebView?, request: WebResourceRequest?): Boolean {
         val webUrl = Url(request?.url.toString())
+        if (webUrl.host != url.host) notAuthorizedHost()
         return webUrl.host != url.host
     }
 }

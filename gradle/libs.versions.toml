@@ -39,7 +39,6 @@ ktor-logging = { group = "io.ktor", name = "ktor-client-logging", version.ref = 
 ktor-ios = { group = "io.ktor", name = "ktor-client-darwin", version.ref = "ktor" }
 ktor-serialization = { group = "io.ktor", name = "ktor-serialization-kotlinx-json", version.ref = "ktor" }
 
-
 # Splash
 androidx-splash = { group = "androidx.core", name = "core-splashscreen", version.ref = "splash" }
 

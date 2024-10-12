@@ -2,8 +2,11 @@ package com.rcudev.posts.ui.webview
 
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.viewinterop.UIKitView
+import androidx.compose.ui.viewinterop.UIKitInteropInteractionMode
+import androidx.compose.ui.viewinterop.UIKitInteropProperties
 import io.ktor.http.Url
 import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.cinterop.readValue
@@ -16,10 +19,11 @@ import platform.WebKit.WKWebViewConfiguration
 import platform.WebKit.javaScriptEnabled
 import platform.darwin.NSObject
 
-@OptIn(ExperimentalForeignApi::class)
+@OptIn(ExperimentalForeignApi::class, ExperimentalComposeUiApi::class)
 @Composable
 actual fun WebViewRoute(
-    url: String
+    url: String,
+    notAuthorizedHost: () -> Unit
 ) {
     if (url.isEmpty()) {
         EmptyWebView()
@@ -35,7 +39,7 @@ actual fun WebViewRoute(
                 allowsInlineMediaPlayback = true
             }
             WKWebView(frame = CGRectZero.readValue(), configuration = configuration).apply {
-                this.navigationDelegate = SGWebViewDelegate(Url(url))
+                this.navigationDelegate = SGWebViewDelegate(Url(url), notAuthorizedHost)
                 this.loadRequest(NSURLRequest(NSURL(string = url)))
             }
         },
@@ -44,25 +48,32 @@ actual fun WebViewRoute(
                 webView.loadRequest(NSURLRequest(NSURL(string = url)))
             }
         },
+        properties = UIKitInteropProperties(
+            interactionMode = UIKitInteropInteractionMode.NonCooperative,
+            isNativeAccessibilityEnabled = true,
+        ),
         modifier = Modifier.fillMaxSize()
     )
 }
 
-class SGWebViewDelegate(private val url: Url) : NSObject(), WKNavigationDelegateProtocol {
+class SGWebViewDelegate(private val url: Url, val notAuthorizedHost: () -> Unit) : NSObject(), WKNavigationDelegateProtocol {
     override fun webView(
         webView: WKWebView,
         decidePolicyForNavigationAction: WKNavigationAction,
         decisionHandler: (WKNavigationActionPolicy) -> Unit
     ) {
-        val webUrl = Url(decidePolicyForNavigationAction.request.URL?.absoluteString ?: "")
-        if (webUrl.host != url.host) {
-            decisionHandler(WKNavigationActionPolicy.WKNavigationActionPolicyCancel)
-        } else {
-            decisionHandler(WKNavigationActionPolicy.WKNavigationActionPolicyAllow)
+        val navigationType = decidePolicyForNavigationAction.navigationType
+        val webUrl = Url(decidePolicyForNavigationAction.request.URL?.absoluteString.orEmpty())
+        when(navigationType){
+            WKNavigationTypeLinkActivated -> {
+                if (webUrl.host != url.host) {
+                    notAuthorizedHost()
+                    decisionHandler(WKNavigationActionPolicy.WKNavigationActionPolicyCancel)
+                } else {
+                    decisionHandler(WKNavigationActionPolicy.WKNavigationActionPolicyAllow)
+                }
+            }
+            else -> decisionHandler(WKNavigationActionPolicy.WKNavigationActionPolicyAllow)
         }
-    }
-
-    override fun webView(webView: WKWebView, didFinishNavigation: WKNavigation?) {
-        // Handle what to do when navigation finishes if needed
     }
 }

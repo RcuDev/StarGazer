@@ -81,9 +81,6 @@ kotlin {
     composeCompiler {
         featureFlags.addAll(ComposeFeatureFlag.StrongSkipping, ComposeFeatureFlag.OptimizeNonSkippingGroups)
     }
-    sourceSets.all {
-        languageSettings.enableLanguageFeature("ExplicitBackingFields")
-    }
 }
 
 android {

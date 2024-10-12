@@ -1,4 +1,3 @@
-import org.gradle.kotlin.dsl.implementation
 import org.gradle.kotlin.dsl.sourceSets
 import org.jetbrains.kotlin.compose.compiler.gradle.ComposeFeatureFlag
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
@@ -70,9 +69,6 @@ kotlin {
             ComposeFeatureFlag.StrongSkipping,
             ComposeFeatureFlag.OptimizeNonSkippingGroups
         )
-    }
-    sourceSets.all {
-        languageSettings.enableLanguageFeature("ExplicitBackingFields")
     }
 }
 

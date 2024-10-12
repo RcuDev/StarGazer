@@ -33,7 +33,10 @@ internal fun NavGraph(
         }
         composable<WebView> { entry ->
             WebViewRoute(
-                url = entry.toRoute<WebView>().url
+                url = entry.toRoute<WebView>().url,
+                notAuthorizedHost = {
+                    showSnackBar("No external navigations allowed!")
+                }
             )
         }
     }

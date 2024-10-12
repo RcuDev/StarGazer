@@ -38,7 +38,7 @@ internal fun AppContent(
     val showBackButton by remember {
         derivedStateOf {
             currentBackStackEntry?.destination?.route?.contains(
-                other = WebView::class.qualifiedName ?: ""
+                other = WebView::class.qualifiedName.orEmpty()
             ) == true
         }
     }

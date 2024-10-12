@@ -17,7 +17,6 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalCoroutinesApi::class)
 class PostViewModel(
     private val preferences: DataStore<Preferences>,
     private val postService: PostService,

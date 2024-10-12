@@ -4,5 +4,6 @@ import androidx.compose.runtime.Composable
 
 @Composable
 expect fun WebViewRoute(
-    url: String
+    url: String,
+    notAuthorizedHost: () -> Unit
 )
