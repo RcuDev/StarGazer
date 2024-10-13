@@ -17,7 +17,7 @@ StarGazer is a KMM application for Android and iOS built using Kotlin Multiplatf
 *   Detailed views: Tapping any post opens a detailed view with the full content embedded in a web view.
 *   Modularized:
     *   **composeApp**: Contains the executable app where in Android it runs a **MainActivity** with the general Composable of the app, and in iOS it loads the **MainViewController** similarly loading the same Composable.
-    *   **posts**: Screen showing posts, settings, and the post detail (webview).
+    *   **posts**: Screen showing posts, settings and the post detail on webview.
     *   **ds**: Contains the app's typography, colors, and theme.
     *   **network**: Provides the client (Ktor) used to make network requests.
     *   **storage**: Uses DataStore for preferences like dark mode, selected post type, and filter by post news website.
