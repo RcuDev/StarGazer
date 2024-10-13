@@ -15,6 +15,7 @@ navigationCompose = "2.8.0-alpha10"
 kotlinx-serialization = "1.7.3"
 dataStore = "1.1.1"
 splash = "1.0.1"
+dateTime = "0.6.1"
 
 [libraries]
 
@@ -26,6 +27,9 @@ coil-ktor = { group = "io.coil-kt.coil3", name = "coil-network-ktor", version.re
 # DataStore
 dataStore = { group = "androidx.datastore", name = "datastore", version.ref = "dataStore" }
 dataStore-preferences = { group = "androidx.datastore", name = "datastore-preferences", version.ref = "dataStore" }
+
+# DateTime
+dateTime = { group = "org.jetbrains.kotlinx", name = "kotlinx-datetime", version.ref = "dateTime" }
 
 # Koin
 koin-compose = { group = "io.insert-koin", name = "koin-compose", version.ref = "koin" }

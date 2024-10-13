@@ -67,9 +67,9 @@ class SGWebViewDelegate(private val url: Url, val notAuthorizedHost: () -> Unit)
         when(navigationType){
             WKNavigationTypeLinkActivated -> {
                 if (webUrl.host != url.host) {
-                    notAuthorizedHost()
                     decisionHandler(WKNavigationActionPolicy.WKNavigationActionPolicyCancel)
                 } else {
+                    notAuthorizedHost()
                     decisionHandler(WKNavigationActionPolicy.WKNavigationActionPolicyAllow)
                 }
             }

@@ -35,7 +35,7 @@ internal fun NavGraph(
             WebViewRoute(
                 url = entry.toRoute<WebView>().url,
                 notAuthorizedHost = {
-                    showSnackBar("No external navigations allowed!")
+                    showSnackBar("External links are not allowed!")
                 }
             )
         }

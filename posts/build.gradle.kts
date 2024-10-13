@@ -50,6 +50,9 @@ kotlin {
             // Serialization
             implementation(libs.kotlinx.serialization)
 
+            // DateTime
+            implementation(libs.dateTime)
+
             // Coil
             implementation(libs.coil)
             implementation(libs.coil.compose)

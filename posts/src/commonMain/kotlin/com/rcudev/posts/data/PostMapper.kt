@@ -9,6 +9,9 @@ import com.rcudev.posts.model.Launch
 import com.rcudev.posts.model.Post
 import com.rcudev.posts.model.PostType
 import com.rcudev.posts.model.Posts
+import kotlinx.datetime.*
+import kotlinx.datetime.format.FormatStringsInDatetimeFormats
+import kotlinx.datetime.format.byUnicodePattern
 
 internal fun PostsResponse.toPosts(postType: PostType) = Posts(
     count = count,
@@ -25,8 +28,8 @@ private fun PostResponse.toPost(postType: PostType) = Post(
     imageUrl = imageUrl.replace("http:", "https:"), // Only for images to load on iOS devices
     newsSite = newsSite,
     summary = summary,
-    publishedAt = publishedAt,
-    updatedAt = updatedAt,
+    publishedAt = publishedAt.asFormattedDate,
+    updatedAt = updatedAt.asFormattedDate,
     featured = featured,
     launches = launches.map { it.toLaunch },
     events = events.map { it.toEvent }
@@ -43,3 +46,12 @@ private val EventResponse.toEvent
         eventId = eventId,
         provider = provider
     )
+
+@OptIn(FormatStringsInDatetimeFormats::class)
+private val String.asFormattedDate: String
+    get() {
+        val instant = Instant.parse(this)
+        return instant
+            .toLocalDateTime(TimeZone.currentSystemDefault())
+            .format(LocalDateTime.Format { byUnicodePattern("yyyy/MM/dd - HH:mm") })
+    }

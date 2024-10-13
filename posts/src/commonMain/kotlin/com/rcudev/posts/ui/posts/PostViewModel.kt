@@ -13,7 +13,7 @@ import com.rcudev.posts.model.PostType
 import com.rcudev.posts.ui.ViewState
 import com.rcudev.storage.NEWS_SITES_FILTER
 import com.rcudev.storage.POST_TYPE_FILTER
-import kotlinx.coroutines.ExperimentalCoroutinesApi
+import com.rcudev.utils.logMessage
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
@@ -91,7 +91,10 @@ class PostViewModel(
                 posts.update { ((it ?: emptyList()) + (data.results)) }
                 loadingNextPage.value = false
             },
-            onFailure = { showError.value = true }
+            onFailure = {
+                logMessage("PostViewModel", it.message ?: "Unknown")
+                showError.value = true
+            }
         )
     }
 
