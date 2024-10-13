@@ -1,7 +1,5 @@
 
-<div style="display: flex; justify-content: center;">
-    <img src="screenshots/star_gazer_icon.png" alt="StarGazer icon" width="250"/>
-</div>
+<img src="screenshots/star_gazer_icon.png" alt="StarGazer icon" width="250"/>
 
 # StarGazer
 
