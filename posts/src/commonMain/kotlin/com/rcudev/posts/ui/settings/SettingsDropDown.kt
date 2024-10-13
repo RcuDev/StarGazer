@@ -46,6 +46,12 @@ fun FilterDropDown(
     val allNewsSites = remember { newsSites.toMutableStateList() }
     val selectedNewsSites =
         remember { (newsSitesSelected?.split(",") ?: listOf()).toMutableStateList() }
+    val orderedItems = remember {
+        allNewsSites
+            .sortedByDescending { it in selectedNewsSites }
+            .filter { it.isNotEmpty() }
+            .distinct()
+    }
 
     AlertDialog(
         onDismissRequest = {
@@ -75,10 +81,7 @@ fun FilterDropDown(
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     items(
-                        items = allNewsSites
-                            .sortedByDescending { it in selectedNewsSites }
-                            .filter { it.isNotEmpty() }
-                            .distinct(),
+                        items = orderedItems,
                         key = { it }
                     ) { newsSite ->
                         NewsSiteItem(
