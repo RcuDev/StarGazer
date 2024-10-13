@@ -47,14 +47,6 @@ fun FilterDropDown(
     val selectedNewsSites =
         remember { (newsSitesSelected?.split(",") ?: listOf()).toMutableStateList() }
 
-    // Derived state to order the list
-    val orderedNewsSites = remember {
-        val result = mutableListOf<String>()
-        result.addAll(selectedNewsSites)
-        result.addAll(allNewsSites.filterNot { it in selectedNewsSites })
-        result
-    }
-
     AlertDialog(
         onDismissRequest = {
             onDismissRequest()
@@ -82,17 +74,21 @@ fun FilterDropDown(
                 LazyColumn(
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    items(orderedNewsSites.filter { it.isNotEmpty() }) { newsSite ->
+                    items(
+                        items = allNewsSites
+                            .sortedByDescending { it in selectedNewsSites }
+                            .filter { it.isNotEmpty() }
+                            .distinct(),
+                        key = { it }
+                    ) { newsSite ->
                         NewsSiteItem(
                             newsSite = newsSite,
                             isSelected = newsSite in selectedNewsSites,
                             onCheckChange = { isChecked ->
                                 if (isChecked) {
-                                    allNewsSites.remove(newsSite)
                                     selectedNewsSites.add(newsSite)
                                 } else {
                                     selectedNewsSites.remove(newsSite)
-                                    allNewsSites.add(newsSite)
                                 }
                             }
                         )
