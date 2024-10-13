@@ -1,28 +1,29 @@
-
 <img src="screenshots/star_gazer_icon.png" alt="StarGazer icon" width="250"/>
 
 # StarGazer
 
-StarGazer es una aplicación móvil multiplataforma para Android e iOS construida utilizando Kotlin Multiplatform. Utiliza la API de [spaceflightnewsapi.net](https://www.spaceflightnewsapi.net/) para mostrar una lista de artículos, blogs y reportes sobre vuelos espaciales.
+[English](README.md) | [Español](docs/README.es.md)
 
-## Características
+StarGazer is a KMM application for Android and iOS built using Kotlin Multiplatform. It uses the [spaceflightnewsapi.net](https://www.spaceflightnewsapi.net/) API to display a list of articles, blogs, and reports about spaceflight.
 
-*   Multiplataforma: Disponible tanto en Android como en iOS.
-*   Interfaz moderna: Una interfaz de usuario limpia e intuitiva con unos filtros superiores para acceder fácilmente a las diferentes secciones.
-*   Tres secciones:
-    *   **Artículos:** Muestra una lista de artículos relacionados con los vuelos espaciales.
-    *   **Blogs:** Presenta una colección de publicaciones de blogs sobre la exploración espacial.
-    *   **Reportes:** Proporciona acceso a informes sobre misiones y descubrimientos espaciales.
-*   Vistas detalladas: Al tocar cualquier publicación, se abre una vista detallada con el contenido completo en una web embedida.
-*   Modularizado:
-    *   **composeApp**: Contiene la aplicación ejecutable donde en Android se ejecuta una **MainActivity** con el Composable general de la app y en iOS se carga el **MainViewController** cargando igualmente el mismo Composable.
-    *   **posts**: Pantalla donde se muestran los post, settings y el detalle del post (webview).
-    *   **ds**: Contiene la tipografía, colores y Theme de la aplicación.
-    *   **network**: Proporciona el cliente (Ktor), que servirá para para realizar las peticiones.
-    *   **storage**: Uso de DataStore para las preferencias como el modo oscuro, tipo de post seleccionado y filtro por web de la noticia del post.
-    *   **utils**: proporciona métodos que pueden ser usados en varios módulos y cuya característica es que necesitan implementaciones distintas para Android e iOS.
+## Features
 
-## Capturas de pantalla
+*   Cross-platform: Available on both Android and iOS.
+*   Modern UI: A clean and intuitive user interface with top filters for easy access to different sections.
+*   Three sections:
+    *   **Articles:** Displays a list of articles related to spaceflight.
+    *   **Blogs:** Features a collection of blog posts about space exploration.
+    *   **Reports:** Provides access to reports on space missions and discoveries.
+*   Detailed views: Tapping any post opens a detailed view with the full content embedded in a web view.
+*   Modularized:
+    *   **composeApp**: Contains the executable app where in Android it runs a **MainActivity** with the general Composable of the app, and in iOS it loads the **MainViewController** similarly loading the same Composable.
+    *   **posts**: Screen showing posts, settings, and the post detail (webview).
+    *   **ds**: Contains the app's typography, colors, and theme.
+    *   **network**: Provides the client (Ktor) used to make network requests.
+    *   **storage**: Uses DataStore for preferences like dark mode, selected post type, and filter by post news website.
+    *   **utils**: Provides methods used across different modules, which require distinct implementations for Android and iOS.
+
+## Screenshots
 
 ### Android
 
@@ -42,21 +43,22 @@ StarGazer es una aplicación móvil multiplataforma para Android e iOS construid
 <img src="screenshots/Settings_iOS.png" alt="iOS Settings" width="200">
 </div>
 
-## Tecnologías
+## Tech Stack
 
 *   Kotlin Multiplatform
-*   Jetpack Compose (Android e iOS)
-*   Compose Navigation (Tipado Seguro)
-*   Ktor (Redes)
-*   Koin (Inyección de Dependencias)
-*   Coil (Imágenes)
-*   DataStore (Preferencias)
+*   Jetpack Compose (Android and iOS)
+*   Compose Navigation (Type Safe)
+*   Ktor (Networking)
+*   Koin (Dependency Injection)
+*   Coil (Images)
+*   DataStore (Preferences)
 
 ## API
 
-Esta aplicación utiliza la API gratuita y abierta [spaceflightnewsapi.net](https://www.spaceflightnewsapi.net/).
+This app uses the free and open [spaceflightnewsapi.net](https://www.spaceflightnewsapi.net/) API.
 
 ## WIP
 
-*   Mejoras en la UI/UX
-*   Test
+*   UI/UX improvements.
+*   Testing.
+*   Minor fixes.
