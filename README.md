@@ -60,4 +60,5 @@ Esta aplicación utiliza la API gratuita y abierta [spaceflightnewsapi.net](http
 
 ## WIP
 
-*   Mejoras en la UI.
+*   Mejoras en la UI/UX
+*   Test
