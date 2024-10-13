@@ -1,4 +1,7 @@
-<img src="screenshots/star_gazer_icon.png" alt="Artículos" width="200"/>
+
+<div style="text-align: center;">
+    <img src="screenshots/star_gazer_icon.png" alt="StarGazer icon" width="250"/>
+</div>
 
 # StarGazer
 
@@ -25,17 +28,21 @@ StarGazer es una aplicación móvil multiplataforma para Android e iOS construid
 
 ### Android
 
-<img src="screenshots/Post_Android_Light.png" alt="Artículos" width="200"/>
-<img src="screenshots/Post_Android_Dark.png" alt="Artículos" width="200">
-<img src="screenshots/Detail_Android.png" alt="Artículos" width="200">
-<img src="screenshots/Settings_Android.png" alt="Artículos" width="200">
+<div style="display: flex; justify-content: space-between;">
+    <img src="screenshots/Post_Android_Light.png" alt="Android Light" width="200" style="margin-right: 16px;"/>
+<img src="screenshots/Post_Android_Dark.png" alt="Android Dark" width="200" style="margin-right: 16px;">
+<img src="screenshots/Detail_Android.png" alt="Android Detail" width="200" style="margin-right: 16px;">
+<img src="screenshots/Settings_Android.png" alt="Android Settings" width="200">
+</div>
 
 ### iOS
 
-<img src="screenshots/Post_iOS_Light.png" alt="Artículos" width="200"/>
-<img src="screenshots/Post_iOS_Dark.png" alt="Artículos" width="200">
-<img src="screenshots/Detail_iOS.png" alt="Artículos" width="200">
-<img src="screenshots/Settings_iOS.png" alt="Artículos" width="200">
+<div style="display: flex; justify-content: space-between;">
+    <img src="screenshots/Post_iOS_Light.png" alt="iOS Light" width="200" style="margin-right: 16px;"/>
+<img src="screenshots/Post_iOS_Dark.png" alt="iOS Dark" width="200" style="margin-right: 16px;">
+<img src="screenshots/Detail_iOS.png" alt="iOS Detail" width="200" style="margin-right: 16px;">
+<img src="screenshots/Settings_iOS.png" alt="iOS Settings" width="200">
+</div>
 
 ## Tecnologías
 
