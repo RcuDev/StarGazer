@@ -33,7 +33,7 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import com.rcudev.ds.theme.Typography
-import com.rcudev.posts.model.PostType
+import com.rcudev.posts.domain.model.PostType
 import com.rcudev.storage.POST_TYPE_FILTER
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch

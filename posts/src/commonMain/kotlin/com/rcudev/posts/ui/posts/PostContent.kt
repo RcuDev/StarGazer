@@ -20,7 +20,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import com.rcudev.ds.theme.Typography
-import com.rcudev.posts.model.Post
+import com.rcudev.posts.domain.model.Post
 import com.rcudev.posts.ui.ViewState
 import com.rcudev.utils.LocalImageLoader
 import com.rcudev.utils.logMessage

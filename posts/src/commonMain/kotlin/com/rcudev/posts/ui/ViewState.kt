@@ -1,6 +1,6 @@
 package com.rcudev.posts.ui
 
-import com.rcudev.posts.model.Post
+import com.rcudev.posts.domain.model.Post
 
 sealed class ViewState {
     data object Loading : ViewState()

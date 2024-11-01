@@ -1,4 +1,4 @@
-package com.rcudev.posts.model
+package com.rcudev.posts.domain.model
 
 enum class PostType(val type: String) {
     ARTICLES("Articles"),
