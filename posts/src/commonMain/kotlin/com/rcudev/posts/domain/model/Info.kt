@@ -1,4 +1,4 @@
-package com.rcudev.posts.model
+package com.rcudev.posts.domain.model
 
 data class Info(
     val version: String,

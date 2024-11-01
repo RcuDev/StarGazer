@@ -1,4 +1,5 @@
 import org.gradle.kotlin.dsl.sourceSets
+import org.jetbrains.compose.ExperimentalComposeLibrary
 import org.jetbrains.kotlin.compose.compiler.gradle.ComposeFeatureFlag
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
@@ -8,6 +9,7 @@ plugins {
     alias(libs.plugins.androidLibrary)
     alias(libs.plugins.jetbrainsCompose)
     alias(libs.plugins.compose.compiler)
+    alias(libs.plugins.mokkery)
     kotlin("plugin.serialization") version "2.0.20"
 }
 
@@ -65,6 +67,14 @@ kotlin {
             // DataStore
             implementation(libs.dataStore.preferences)
         }
+        commonTest.dependencies {
+            implementation(libs.kotlin.test)
+            implementation(libs.coroutines.test)
+            implementation(kotlin("test-annotations-common"))
+
+            @OptIn(ExperimentalComposeLibrary::class)
+            implementation(compose.uiTest)
+        }
     }
 
     composeCompiler {
@@ -92,3 +102,10 @@ android {
     }
 }
 
+dependencies {
+    configurations
+        .filter { it.name.startsWith("ksp") && it.name.contains("Test") }
+        .forEach {
+            add(it.name, "io.mockative:mockative-processor:2.2.2")
+        }
+}
