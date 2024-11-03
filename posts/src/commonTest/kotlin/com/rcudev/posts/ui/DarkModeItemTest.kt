@@ -37,9 +37,9 @@ class DarkModeItemTest : KoinTest {
             mutablePreferencesOf(
                 DARK_MODE to false
             )
-        ) // Flow with default preferences
+        )
         preferences = mock<DataStore<Preferences>>(MockMode.autoUnit)
-        every { preferences.data } returns dataFlow // Mock preferences data flow
+        every { preferences.data } returns dataFlow
     }
 
     @AfterTest

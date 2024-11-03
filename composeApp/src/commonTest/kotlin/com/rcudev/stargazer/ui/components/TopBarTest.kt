@@ -38,7 +38,7 @@ class TopBarTest : KoinTest {
             )
         )
         preferences = mock<DataStore<Preferences>>(MockMode.autoUnit)
-        every { preferences.data } returns dataFlow // Mock preferences data flow with initial values
+        every { preferences.data } returns dataFlow
     }
 
     @AfterTest
@@ -51,15 +51,16 @@ class TopBarTest : KoinTest {
     fun displaysTopBarWithCorrectInitialState() = runComposeUiTest {
         // Given - TopBar is displayed without the back button and with PostTypeChips
         setContent {
-            TopBar(
-                preferences = preferences,
-                showBackButton = false
-            )
+            KoinTestFrame {
+                TopBar(
+                    showBackButton = false
+                )
+            }
         }
 
         // Then - Verify correct initial UI elements are displayed
         onNodeWithTag("Back").assertDoesNotExist() // Back button should not be present
-        onNodeWithTag("PostTypeChips").assertIsDisplayed() // PostTypeChips should be visible
+        onNodeWithTag("PostTypeChips").assertIsDisplayed()
         onNodeWithTag(PostType.ARTICLES.type).assertIsDisplayed()
         onNodeWithTag(PostType.BLOGS.type).assertIsDisplayed()
         onNodeWithTag(PostType.REPORTS.type).assertIsDisplayed()
@@ -121,10 +122,11 @@ class TopBarTest : KoinTest {
     fun displaysTopBarWithBackButtonAndHidesPostTypeChipsWhenWebViewIsEnabled() = runComposeUiTest {
         // Given - TopBar is displayed with the back button and without PostTypeChips
         setContent {
-            TopBar(
-                preferences = preferences,
-                showBackButton = true
-            )
+            KoinTestFrame {
+                TopBar(
+                    showBackButton = true
+                )
+            }
         }
 
         // Then - Verify back button is displayed and PostTypeChips is not
