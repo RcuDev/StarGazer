@@ -26,6 +26,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -41,8 +42,9 @@ import org.koin.compose.koinInject
 
 @Composable
 internal fun TopBar(
+    preferences: DataStore<Preferences> = koinInject(),
     showBackButton: Boolean,
-    onBackClick: () -> Unit,
+    onBackClick: () -> Unit = {},
 ) {
     Row(
         horizontalArrangement = Arrangement.spacedBy(16.dp),
@@ -67,6 +69,7 @@ internal fun TopBar(
                     .clickable {
                         onBackClick()
                     }
+                    .testTag("Back")
             )
         }
 
@@ -80,14 +83,18 @@ internal fun TopBar(
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
                 modifier = Modifier
                     .weight(1f)
+                    .testTag("PostTypeChips")
             ) {
                 FilterChip(
+                    preferences = preferences,
                     text = PostType.ARTICLES.type
                 )
                 FilterChip(
+                    preferences = preferences,
                     text = PostType.BLOGS.type
                 )
                 FilterChip(
+                    preferences = preferences,
                     text = PostType.REPORTS.type
                 )
             }
@@ -98,7 +105,7 @@ internal fun TopBar(
 
 @Composable
 private fun FlowRowScope.FilterChip(
-    preferences: DataStore<Preferences> = koinInject(),
+    preferences: DataStore<Preferences>,
     text: String,
 ) {
     val scope = rememberCoroutineScope()
@@ -129,5 +136,6 @@ private fun FlowRowScope.FilterChip(
         },
         modifier = Modifier
             .weight(1f)
+            .testTag(text)
     )
 }

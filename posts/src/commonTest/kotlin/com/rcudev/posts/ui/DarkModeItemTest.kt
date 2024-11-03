@@ -3,6 +3,7 @@
 package com.rcudev.posts.ui
 
 import androidx.compose.ui.test.ExperimentalTestApi
+import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsOff
 import androidx.compose.ui.test.assertIsOn
 import androidx.compose.ui.test.onNodeWithTag
@@ -19,6 +20,7 @@ import dev.mokkery.every
 import dev.mokkery.mock
 import kotlinx.coroutines.flow.MutableStateFlow
 import org.koin.test.KoinTest
+import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 
@@ -31,9 +33,19 @@ class DarkModeItemTest : KoinTest {
     @BeforeTest
     fun setUp() {
         // Given - Setup mock for DataStore and initial preferences flow
-        dataFlow = MutableStateFlow(mutablePreferencesOf()) // Flow with empty preferences
+        dataFlow = MutableStateFlow(
+            mutablePreferencesOf(
+                DARK_MODE to false
+            )
+        ) // Flow with default preferences
         preferences = mock<DataStore<Preferences>>(MockMode.autoUnit)
         every { preferences.data } returns dataFlow // Mock preferences data flow
+    }
+
+    @AfterTest
+    fun tearDown() {
+        // Reset preferences data flow after each test
+        dataFlow.value = mutablePreferencesOf()
     }
 
     @Test
@@ -46,8 +58,8 @@ class DarkModeItemTest : KoinTest {
         }
 
         // Then - Check that "Dark mode" text and switch exist, and that switch is initially off
-        onNodeWithText("Dark mode").assertExists("Expected to find 'Dark mode' label")
-        onNodeWithTag("DarkModeSwitch").assertExists("Expected to find switch with tag 'DarkModeSwitch'")
+        onNodeWithText("Dark mode").assertIsDisplayed()
+        onNodeWithTag("DarkModeSwitch").assertIsDisplayed()
         onNodeWithTag("DarkModeSwitch").assertIsOff()
     }
 
