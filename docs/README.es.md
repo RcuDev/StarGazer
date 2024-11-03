@@ -65,7 +65,13 @@ Como alternativa actualizada y con un uso similar, decidí usar **[mokkery](http
 
 En el módulo **composeApp** se han añadido test de compose para validar los distintos estados de la **TopBar**, validando tanto sus estados iniciales como su actualización cuando los datos en **DataStore** se modifican.
 
+*   [TopBarTest (UI)](composeApp/src/commonTest/kotlin/com/rcudev/stargazer/ui/components/TopBarTest.kt)
+
 En el módulo **posts**, se han añadido test para validar los servicios de **info** y de **posts**. Se validan tanto un resultado positivo como que los resultados del mapper sean correctos y coincidan con los datos fake. A parte, se añaden test de compose para validar el **switch** que cambia del modo claro al modo oscuro.
+
+*   [InfoServiceTest](posts/src/commonTest/kotlin/com/rcudev/posts/data/remote/InfoServiceTest.kt)
+*   [PostServiceTest](posts/src/commonTest/kotlin/com/rcudev/posts/data/remote/PostServiceTest.kt)
+*   [DarkModeItemTest (UI)](posts/src/commonTest/kotlin/com/rcudev/posts/ui/DarkModeItemTest.kt)
 
 En cuanto a los test de compose, en ambos composables se le inyecta por **koin** las preferencias, por lo que en las primeras ejecuciones fallaba. Para solucionarlo, creé un composable para crear un contexto donde se dispongan de las instancias necesarias:
 
