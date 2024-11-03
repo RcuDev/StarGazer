@@ -49,7 +49,7 @@ class DarkModeItemTest : KoinTest {
     }
 
     @Test
-    fun `Dark mode switch is displayed with correct initial state`() = runComposeUiTest {
+    fun displaysSwitchWithCorrectInitialState() = runComposeUiTest {
         // Given - Set up content with mocked preferences where DARK_MODE is initially false
         setContent {
             KoinTestFrame {
@@ -64,7 +64,7 @@ class DarkModeItemTest : KoinTest {
     }
 
     @Test
-    fun `When dark mode is true Then switch is checked`() = runComposeUiTest {
+    fun switchIsCheckedWhenDarkModeIsEnabled() = runComposeUiTest {
         // When - Set DARK_MODE to true in the mock preferences flow
         dataFlow.value = mutablePreferencesOf(DARK_MODE to true)
 

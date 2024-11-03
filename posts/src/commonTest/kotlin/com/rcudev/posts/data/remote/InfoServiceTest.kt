@@ -27,7 +27,7 @@ class InfoServiceTest {
     }
 
     @Test
-    fun `When getInfo is called Then it returns a successful result`() = runTest {
+    fun getInfoReturnsSuccessfulResult() = runTest {
         // When - Call getInfo() on the mocked InfoService
         val result = infoService.getInfo()
 
@@ -36,24 +36,23 @@ class InfoServiceTest {
     }
 
     @Test
-    fun `When getInfo is called Then returned data matches expected infoResponse values`() =
-        runTest {
-            // When - Call getInfo() and retrieve the result data
-            val result = infoService.getInfo().getOrNull()
+    fun getInfoReturnsDataMatchingExpectedValues() = runTest {
+        // When - Call getInfo() and retrieve the result data
+        val result = infoService.getInfo().getOrNull()
 
-            // Then - Verify the result data matches the mockInfoResponse values
-            assertTrue(result != null, "Expected non-null result from getInfo()")
-            assertEquals(
-                mockInfoResponse.version,
-                result.version,
-                "Expected version in result to match mock version"
-            )
-            assertEquals(
-                mockInfoResponse.newsSites,
-                result.newsSites,
-                "Expected newsSites in result to match mock newsSites list"
-            )
-        }
+        // Then - Verify the result data matches the mockInfoResponse values
+        assertTrue(result != null, "Expected non-null result from getInfo()")
+        assertEquals(
+            mockInfoResponse.version,
+            result.version,
+            "Expected version in result to match mock version"
+        )
+        assertEquals(
+            mockInfoResponse.newsSites,
+            result.newsSites,
+            "Expected newsSites in result to match mock newsSites list"
+        )
+    }
 
     companion object {
         // Given - Sample mock response for testing purposes

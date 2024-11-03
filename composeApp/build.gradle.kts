@@ -1,3 +1,4 @@
+import dev.mokkery.gradle.ApplicationRule
 import org.jetbrains.compose.ExperimentalComposeLibrary
 import org.jetbrains.kotlin.compose.compiler.gradle.ComposeFeatureFlag
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
@@ -11,6 +12,10 @@ plugins {
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.mokkery)
     kotlin("plugin.serialization") version "2.0.20"
+}
+
+mokkery {
+    rule.set(ApplicationRule.All)
 }
 
 kotlin {

@@ -48,7 +48,7 @@ class TopBarTest : KoinTest {
     }
 
     @Test
-    fun `TopBar is displayed with correct initial state`() = runComposeUiTest {
+    fun displaysTopBarWithCorrectInitialState() = runComposeUiTest {
         // Given - TopBar is displayed without the back button and with PostTypeChips
         setContent {
             TopBar(
@@ -66,7 +66,7 @@ class TopBarTest : KoinTest {
     }
 
     @Test
-    fun `PostTypeChips is displayed with correct initial state`() = runComposeUiTest {
+    fun displaysPostTypeChipsWithCorrectInitialState() = runComposeUiTest {
         // Given - Initial selection is set to ARTICLES in the preferences
         setContent {
             TopBar(
@@ -82,45 +82,43 @@ class TopBarTest : KoinTest {
     }
 
     @Test
-    fun `PostTypeChips preference is updated when selecting BLOGS Then BLOGS is selected`() =
-        runComposeUiTest {
-            // When - Update preference to select BLOGS type
-            dataFlow.value = mutablePreferencesOf(POST_TYPE_FILTER to PostType.BLOGS.type)
+    fun updatesPreferenceAndSelectsBlogsWhenBlogsChipIsSelected() = runComposeUiTest {
+        // When - Update preference to select BLOGS type
+        dataFlow.value = mutablePreferencesOf(POST_TYPE_FILTER to PostType.BLOGS.type)
 
-            setContent {
-                TopBar(
-                    preferences = preferences,
-                    showBackButton = false
-                )
-            }
-
-            // Then - Verify that BLOGS chip is selected and others are not
-            onNodeWithTag(PostType.ARTICLES.type).assertIsNotSelected()
-            onNodeWithTag(PostType.BLOGS.type).assertIsSelected()
-            onNodeWithTag(PostType.REPORTS.type).assertIsNotSelected()
+        setContent {
+            TopBar(
+                preferences = preferences,
+                showBackButton = false
+            )
         }
 
+        // Then - Verify that BLOGS chip is selected and others are not
+        onNodeWithTag(PostType.ARTICLES.type).assertIsNotSelected()
+        onNodeWithTag(PostType.BLOGS.type).assertIsSelected()
+        onNodeWithTag(PostType.REPORTS.type).assertIsNotSelected()
+    }
+
     @Test
-    fun `PostTypeChips preference is updated when selecting REPORTS Then REPORTS is selected`() =
-        runComposeUiTest {
-            // When - Update preference to select REPORTS type
-            dataFlow.value = mutablePreferencesOf(POST_TYPE_FILTER to PostType.REPORTS.type)
+    fun updatesPreferenceAndSelectsReportsWhenReportsChipIsSelected() = runComposeUiTest {
+        // When - Update preference to select REPORTS type
+        dataFlow.value = mutablePreferencesOf(POST_TYPE_FILTER to PostType.REPORTS.type)
 
-            setContent {
-                TopBar(
-                    preferences = preferences,
-                    showBackButton = false
-                )
-            }
-
-            // Then - Verify that REPORTS chip is selected and others are not
-            onNodeWithTag(PostType.ARTICLES.type).assertIsNotSelected()
-            onNodeWithTag(PostType.BLOGS.type).assertIsNotSelected()
-            onNodeWithTag(PostType.REPORTS.type).assertIsSelected()
+        setContent {
+            TopBar(
+                preferences = preferences,
+                showBackButton = false
+            )
         }
 
+        // Then - Verify that REPORTS chip is selected and others are not
+        onNodeWithTag(PostType.ARTICLES.type).assertIsNotSelected()
+        onNodeWithTag(PostType.BLOGS.type).assertIsNotSelected()
+        onNodeWithTag(PostType.REPORTS.type).assertIsSelected()
+    }
+
     @Test
-    fun `TopBar is displayed with correct WebView state`() = runComposeUiTest {
+    fun displaysTopBarWithBackButtonAndHidesPostTypeChipsWhenWebViewIsEnabled() = runComposeUiTest {
         // Given - TopBar is displayed with the back button and without PostTypeChips
         setContent {
             TopBar(
