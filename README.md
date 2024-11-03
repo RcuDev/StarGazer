@@ -52,6 +52,40 @@ StarGazer is a KMM application for Android and iOS built using Kotlin Multiplatf
 *   Koin (Dependency Injection)
 *   Coil (Images)
 *   DataStore (Preferences)
+*   Mokkery (Testing Mocks)
+
+## Testing
+
+The purpose of the changes applied to the tests is to make them fully Multiplatform compatible.
+
+For data mocking, **MockK** was discarded because the only part compatible with Multiplatform is mockk-common, which has not been maintained since 2022, in addition to the multiple errors it causes without clear solutions.
+
+As an updated alternative with similar functionality, I decided to use **[mokkery](https://mokkery.dev/)**, which offers the same methods and capabilities.
+
+In the **composeApp** module, compose tests were added to validate the different states of the **TopBar**, verifying both its initial states and updates when data in **DataStore** is modified.
+
+In the **posts** module, tests were added to validate the **info** and **posts** services. Both a positive result and mapper results are validated to ensure they are correct and match the fake data. Additionally, compose tests were added to validate the **switch** that toggles between light and dark mode.
+
+For the compose tests, both composables inject preferences through **koin**, which caused failures in initial runs. To address this, I created a composable to set up a context with the necessary instances:
+
+```kotlin
+import androidx.compose.runtime.Composable
+import com.rcudev.posts.di.getDiModules
+import org.koin.compose.KoinApplication
+
+@Composable
+internal fun KoinTestFrame(
+    content: @Composable () -> Unit
+) {
+    val diModules = getDiModules()
+
+    KoinApplication(application = {
+        modules(diModules)
+    }) {
+        content()
+    }
+}
+```
 
 ## API
 
