@@ -53,7 +53,7 @@ class DarkModeItemTest : KoinTest {
         // Given - Set up content with mocked preferences where DARK_MODE is initially false
         setContent {
             KoinTestFrame {
-                DarkModeItem(preferences = preferences)
+                DarkModeItem()
             }
         }
 
@@ -69,9 +69,7 @@ class DarkModeItemTest : KoinTest {
         dataFlow.value = mutablePreferencesOf(DARK_MODE to true)
 
         setContent {
-            KoinTestFrame {
-                DarkModeItem(preferences = preferences)
-            }
+            DarkModeItem(preferences = preferences)
         }
 
         // Then - Verify that the switch is on when DARK_MODE is true
