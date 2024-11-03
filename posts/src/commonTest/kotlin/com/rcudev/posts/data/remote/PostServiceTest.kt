@@ -22,7 +22,7 @@ class PostServiceTest {
 
     @BeforeTest
     fun setUp() {
-        // Given - Mock setup
+        // Given - Set up a mock for PostService to return mock data for getArticles with ARTICLES type
         postService = mock(MockMode.autoUnit)
         everySuspend { postService.getArticles(PostType.ARTICLES) } returns Result.success(
             mockArticlesResponse.toPosts(PostType.ARTICLES)
@@ -32,10 +32,10 @@ class PostServiceTest {
     @Test
     fun `When getArticles is called with ARTICLES type Then it returns a successful result`() =
         runTest {
-            // When
+            // When - Call getArticles with the PostType.ARTICLES on the mocked PostService
             val result = postService.getArticles(PostType.ARTICLES)
 
-            // Then
+            // Then - Verify the result is successful
             assertTrue(
                 result.isSuccess,
                 "Expected result to be a success when calling getArticles with type ARTICLES"
@@ -45,10 +45,10 @@ class PostServiceTest {
     @Test
     fun `When getArticles is called Then returned data matches expected article response values`() =
         runTest {
-            // When
+            // When - Call getArticles and retrieve the result data
             val result = postService.getArticles(PostType.ARTICLES).getOrNull()
 
-            // Then
+            // Then - Verify the result data matches the mockArticlesResponse values
             assertTrue(
                 result != null,
                 "Expected non-null result for getArticles call with type ARTICLES"
@@ -76,7 +76,7 @@ class PostServiceTest {
         }
 
     companion object {
-        // Given - Sample response for testing
+        // Given - Sample mock response for testing purposes
         private val mockArticlesResponse = Json.decodeFromString<PostsResponse>(articlesResponse)
     }
 }

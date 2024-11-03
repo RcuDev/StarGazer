@@ -3,6 +3,7 @@ package com.rcudev.posts.data.remote
 import com.rcudev.posts.data.model.InfoResponse
 import com.rcudev.posts.data.toInfo
 import com.rcudev.posts.domain.InfoService
+import dev.mokkery.MockMode
 import dev.mokkery.answering.returns
 import dev.mokkery.everySuspend
 import dev.mokkery.mock
@@ -20,42 +21,42 @@ class InfoServiceTest {
 
     @BeforeTest
     fun setUp() {
-        // Given - Mock setup
-        infoService = mock<InfoService>()
+        // Given - Set up a mock of InfoService to return mock data for getInfo()
+        infoService = mock<InfoService>(MockMode.autoUnit)
         everySuspend { infoService.getInfo() } returns Result.success(mockInfoResponse.toInfo)
     }
 
     @Test
     fun `When getInfo is called Then it returns a successful result`() = runTest {
-        // When
+        // When - Call getInfo() on the mocked InfoService
         val result = infoService.getInfo()
 
-        // Then
-        assertTrue(result.isSuccess, "Expected result to be a success")
+        // Then - Verify the result is successful
+        assertTrue(result.isSuccess, "Expected getInfo() result to be a success")
     }
 
     @Test
     fun `When getInfo is called Then returned data matches expected infoResponse values`() =
         runTest {
-            // When
+            // When - Call getInfo() and retrieve the result data
             val result = infoService.getInfo().getOrNull()
 
-            // Then
-            assertTrue(result != null, "Expected non-null result")
+            // Then - Verify the result data matches the mockInfoResponse values
+            assertTrue(result != null, "Expected non-null result from getInfo()")
             assertEquals(
                 mockInfoResponse.version,
                 result.version,
-                "Expected version to match mock data"
+                "Expected version in result to match mock version"
             )
             assertEquals(
                 mockInfoResponse.newsSites,
                 result.newsSites,
-                "Expected newsSites to match mock data"
+                "Expected newsSites in result to match mock newsSites list"
             )
         }
 
     companion object {
-        // Given - Sample response for testing
+        // Given - Sample mock response for testing purposes
         private val mockInfoResponse = Json.decodeFromString<InfoResponse>(infoResponse)
     }
 }
