@@ -6,15 +6,21 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.rcudev.posts.data.remote.InfoService
-import com.rcudev.posts.data.remote.PostService
-import com.rcudev.posts.model.Post
-import com.rcudev.posts.model.PostType
+import com.rcudev.posts.domain.InfoService
+import com.rcudev.posts.domain.PostService
+import com.rcudev.posts.domain.model.Post
+import com.rcudev.posts.domain.model.PostType
 import com.rcudev.posts.ui.ViewState
 import com.rcudev.storage.NEWS_SITES_FILTER
 import com.rcudev.storage.POST_TYPE_FILTER
 import com.rcudev.utils.logMessage
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChangedBy
+import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class PostViewModel(

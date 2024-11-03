@@ -4,11 +4,11 @@ import com.rcudev.posts.data.model.EventResponse
 import com.rcudev.posts.data.model.LaunchResponse
 import com.rcudev.posts.data.model.PostResponse
 import com.rcudev.posts.data.model.PostsResponse
-import com.rcudev.posts.model.Event
-import com.rcudev.posts.model.Launch
-import com.rcudev.posts.model.Post
-import com.rcudev.posts.model.PostType
-import com.rcudev.posts.model.Posts
+import com.rcudev.posts.domain.model.Event
+import com.rcudev.posts.domain.model.Launch
+import com.rcudev.posts.domain.model.Post
+import com.rcudev.posts.domain.model.PostType
+import com.rcudev.posts.domain.model.Posts
 import kotlinx.datetime.*
 import kotlinx.datetime.format.FormatStringsInDatetimeFormats
 import kotlinx.datetime.format.byUnicodePattern

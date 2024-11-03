@@ -21,6 +21,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
@@ -118,7 +119,7 @@ fun FilterDropDown(
 }
 
 @Composable
-private fun DarkModeItem(
+fun DarkModeItem(
     preferences: DataStore<Preferences> = koinInject(),
     scope: CoroutineScope = rememberCoroutineScope()
 ) {
@@ -147,6 +148,7 @@ private fun DarkModeItem(
             },
             modifier = Modifier
                 .scale(0.75f)
+                .testTag("DarkModeSwitch")
         )
     }
 }
