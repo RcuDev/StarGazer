@@ -1,31 +1,30 @@
 [versions]
 agp = "8.6.1"
-android-compileSdk = "34"
+android-compileSdk = "35"
 android-minSdk = "26"
-android-targetSdk = "34"
-androidx-activityCompose = "1.9.3"
+android-targetSdk = "35"
+androidx-activityCompose = "1.10.0"
 androidx-lifecycle = "2.8.2"
-compose-plugin = "1.7.0"
-kotlin = "2.0.20"
-coil = "3.0.0-alpha10"
-coilKtor = "3.0.0-alpha08"
+compose-plugin = "1.7.3"
+kotlin = "2.1.0"
+coil = "3.0.4"
 koin = "4.0.0"
-ktor = "2.3.12"
+ktor = "3.0.1"
 navigationCompose = "2.8.0-alpha10"
 kotlinx-serialization = "1.7.3"
-dataStore = "1.1.1"
+dataStore = "1.1.2"
 splash = "1.0.1"
 dateTime = "0.6.1"
-coroutines-test = "1.8.1"
-mokkery = "2.4.0"
-uiTestManifest = "1.7.5"
+coroutines-test = "1.9.0"
+mokkery = "2.6.0"
+uiTestManifest = "1.7.6"
 
 [libraries]
 
 # Coil
 coil = { group = "io.coil-kt.coil3", name = "coil", version.ref = "coil" }
 coil-compose = { group = "io.coil-kt.coil3", name = "coil-compose", version.ref = "coil" }
-coil-ktor = { group = "io.coil-kt.coil3", name = "coil-network-ktor", version.ref = "coilKtor" }
+coil-ktor = { group = "io.coil-kt.coil3", name = "coil-network-ktor3", version.ref = "coil" }
 
 # DataStore
 dataStore = { group = "androidx.datastore", name = "datastore", version.ref = "dataStore" }
