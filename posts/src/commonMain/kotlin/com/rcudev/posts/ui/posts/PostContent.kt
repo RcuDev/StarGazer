@@ -25,6 +25,7 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.Stable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -42,6 +43,7 @@ import com.rcudev.posts.ui.ViewState
 import com.rcudev.utils.LocalImageLoader
 import com.rcudev.utils.logMessage
 
+@Stable
 @Composable
 internal fun PostContent(
     viewState: ViewState,
@@ -95,6 +97,7 @@ private fun Error() {
     }
 }
 
+@Stable
 @Composable
 private fun Success(
     posts: List<Post>,
@@ -113,16 +116,17 @@ private fun Success(
     ) {
         itemsIndexed(
             items = posts,
-            key = { index, article -> "$index-$article" }) { index, article ->
+            key = { _, post -> post.id }
+        ) { index, post ->
             ItemImpression(
                 index = index,
                 listState = listState,
                 onItemViewed = {
-                    endReached.value = article.id == posts.last().id
+                    endReached.value = post.id == posts.last().id
                 }
             )
-            Post(
-                post = article,
+            PostItem(
+                post = post,
                 onItemClick = onItemClick
             )
         }
@@ -138,62 +142,71 @@ private fun Success(
     }
 }
 
+@Stable
 @Composable
-private fun Post(
-    modifier: Modifier = Modifier,
+private fun PostItem(
     post: Post,
-    onItemClick: (String) -> Unit
+    onItemClick: (String) -> Unit,
+    modifier: Modifier = Modifier
 ) {
     Card(
         modifier = modifier
-            .clip(RoundedCornerShape(4.dp))
+            .fillMaxWidth()
             .clickable(
-                onClick = { onItemClick(post.url) },
-                indication = null,
-                interactionSource = remember { MutableInteractionSource() }
-            )
+                interactionSource = remember { MutableInteractionSource() },
+                indication = null
+            ) {
+                onItemClick(post.url)
+            }
     ) {
-        PostImage(
-            post
-        )
-        Spacer(modifier = Modifier.height(8.dp))
         Column(
-            modifier = Modifier.padding(8.dp)
+            modifier = Modifier.padding(16.dp)
         ) {
+            PostImage(post = post)
+            Spacer(modifier = Modifier.height(12.dp))
+            
             Text(
                 text = post.title,
-                style = Typography.titleLarge
+                style = Typography.titleMedium,
+                modifier = Modifier.fillMaxWidth()
             )
+            
             Spacer(modifier = Modifier.height(8.dp))
-            Text(
-                text = post.summary,
-                style = Typography.bodyMedium,
-            )
-            Spacer(modifier = Modifier.height(8.dp))
-            Row {
-                Text(
-                    text = post.postType.name,
-                    style = Typography.labelSmall,
-                )
-                Spacer(modifier = Modifier.width(8.dp))
+            
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
                 Text(
                     text = post.newsSite,
-                    style = Typography.labelSmall,
+                    style = Typography.bodySmall,
+                    modifier = Modifier.weight(1f)
                 )
-                Spacer(modifier = Modifier.weight(1f))
+                
+                Spacer(modifier = Modifier.width(8.dp))
+                
                 Text(
                     text = post.publishedAt,
-                    style = Typography.labelSmall,
+                    style = Typography.bodySmall
                 )
             }
-            Spacer(modifier = Modifier.height(4.dp))
+            
+            Spacer(modifier = Modifier.height(8.dp))
+            
+            Text(
+                text = post.displaySummary,
+                style = Typography.bodyMedium,
+                modifier = Modifier.fillMaxWidth()
+            )
         }
     }
 }
 
+@Stable
 @Composable
 private fun PostImage(
-    post: Post
+    post: Post,
+    modifier: Modifier = Modifier
 ) {
     val imageLoader = LocalImageLoader.current
     var error by remember { mutableStateOf(false) }
@@ -208,23 +221,32 @@ private fun PostImage(
                 logMessage("PostImage", it.result.throwable.message ?: "unknown")
                 error = true
             },
-            modifier = Modifier
+            modifier = modifier
                 .fillMaxWidth()
-                .aspectRatio(16f / 9)
+                .aspectRatio(16f / 9f)
+                .clip(RoundedCornerShape(8.dp))
         )
     }
 }
 
+@Stable
 @Composable
-private fun ItemImpression(index: Int, listState: LazyListState, onItemViewed: () -> Unit) {
-    val isItemWithKeyInView by remember {
+private fun ItemImpression(
+    index: Int,
+    listState: LazyListState,
+    onItemViewed: () -> Unit
+) {
+    val isItemInView by remember {
         derivedStateOf {
             listState.layoutInfo
                 .visibleItemsInfo
                 .any { it.index == index }
         }
     }
-    if (isItemWithKeyInView) {
-        LaunchedEffect(Unit) { onItemViewed() }
+    
+    if (isItemInView) {
+        LaunchedEffect(Unit) { 
+            onItemViewed() 
+        }
     }
 }

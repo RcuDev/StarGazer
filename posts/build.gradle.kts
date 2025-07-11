@@ -1,7 +1,6 @@
 import dev.mokkery.gradle.ApplicationRule
 import org.gradle.kotlin.dsl.sourceSets
 import org.jetbrains.compose.ExperimentalComposeLibrary
-import org.jetbrains.kotlin.compose.compiler.gradle.ComposeFeatureFlag
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSetTree
@@ -12,7 +11,7 @@ plugins {
     alias(libs.plugins.jetbrainsCompose)
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.mokkery)
-    kotlin("plugin.serialization") version "2.1.0"
+    kotlin("plugin.serialization") version "2.2.0"
 }
 
 mokkery {
@@ -92,10 +91,7 @@ kotlin {
     }
 
     composeCompiler {
-        featureFlags.addAll(
-            ComposeFeatureFlag.StrongSkipping,
-            ComposeFeatureFlag.OptimizeNonSkippingGroups
-        )
+        // Feature flags removed as they are enabled by default in Kotlin 2.2.0
     }
 }
 

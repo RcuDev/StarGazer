@@ -17,30 +17,37 @@ import kotlinx.serialization.json.Json
 private const val BASE_URL = "https://api.spaceflightnewsapi.net/"
 
 abstract class KtorApi {
-    val client = HttpClient {
-        install(HttpCache)
-        install(HttpTimeout) {
-            requestTimeoutMillis = 10000L
-            connectTimeoutMillis = 5000L
-            socketTimeoutMillis = 5000L
+    protected val client = HttpClient {
+        install(HttpCache) {
+            // Enable HTTP cache for better performance
         }
+        
+        install(HttpTimeout) {
+            requestTimeoutMillis = 15_000L
+            connectTimeoutMillis = 10_000L
+            socketTimeoutMillis = 10_000L
+        }
+        
         install(Logging) {
             logger = Logger.SIMPLE
-            level = LogLevel.ALL
+            level = LogLevel.INFO
             filter { request ->
                 request.url.host.contains("api.spaceflightnewsapi.net")
             }
         }
+        
         install(ContentNegotiation) {
             json(Json {
                 ignoreUnknownKeys = true
                 useAlternativeNames = false
+                coerceInputValues = true
+                encodeDefaults = true
+                explicitNulls = false
             })
         }
-        install(HttpCache)
     }
 
-    fun HttpRequestBuilder.pathUrl(path: String) {
+    protected fun HttpRequestBuilder.pathUrl(path: String) {
         url {
             takeFrom(BASE_URL)
             path("v4/$path")

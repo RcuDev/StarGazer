@@ -12,7 +12,7 @@ class InfoServiceImpl : InfoService, KtorApi() {
     override suspend fun getInfo() = runCatching {
         client.get {
             pathUrl("info")
-        }.body<InfoResponse>().toInfo
+        }.body<InfoResponse>().toInfo()
     }
 
 }

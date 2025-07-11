@@ -1,6 +1,6 @@
 package com.rcudev.posts.ui.posts
 
-import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.Stable
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
@@ -14,15 +14,11 @@ import com.rcudev.posts.ui.ViewState
 import com.rcudev.storage.NEWS_SITES_FILTER
 import com.rcudev.storage.POST_TYPE_FILTER
 import com.rcudev.utils.logMessage
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.distinctUntilChangedBy
-import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
+@Stable
 class PostViewModel(
     private val preferences: DataStore<Preferences>,
     private val postService: PostService,
@@ -30,14 +26,15 @@ class PostViewModel(
 ) : ViewModel() {
 
     private val posts = MutableStateFlow<List<Post>?>(null)
-    private val postTypeSelected = MutableStateFlow(PostType.ARTICLES)
     private val loadingNextPage = MutableStateFlow(false)
     private val showError = MutableStateFlow(false)
     private val showLoadPageError = MutableStateFlow(false)
-    private val nextPageToLoad = mutableIntStateOf(0)
+    private val nextPageToLoad = MutableStateFlow(0)
+    
     val newsSites = MutableStateFlow(emptyList<String>())
     val newsSitesSelected = MutableStateFlow("")
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     val state = combine(
         posts,
         loadingNextPage,
@@ -52,76 +49,102 @@ class PostViewModel(
                 loadingNextPage = loadingPage,
                 loadingError = showLoadPageError
             )
-
             else -> ViewState.Loading
         }
     }.stateIn(
         scope = viewModelScope,
-        started = SharingStarted.WhileSubscribed(),
+        started = SharingStarted.WhileSubscribed(5_000),
         initialValue = ViewState.Loading
     )
 
     init {
         viewModelScope.launch {
             loadInfo()
+        }
+        
+        viewModelScope.launch {
             preferences.data
-                .distinctUntilChangedBy { it }
-                .collectLatest { prefs ->
+                .distinctUntilChanged()
+                .collect { prefs ->
                     val newsSitesFilter = prefs[NEWS_SITES_FILTER]
-                    val postType = PostType.entries.find { it.type == prefs[POST_TYPE_FILTER] }
-                    postType?.let {
+                    val postType = PostType.fromString(prefs[POST_TYPE_FILTER])
+                    
+                    if (postType != null) {
                         newsSitesSelected.value = newsSitesFilter.orEmpty()
-                        postTypeSelected.value = postType
-                        posts.value = null
-                        loadPosts(
-                            postType = postTypeSelected.value,
-                            newsSites = newsSitesSelected.value
-                        )
-                    } ?: preferences.edit { it[POST_TYPE_FILTER] = postTypeSelected.value.type }
+                        resetAndLoadPosts(postType, newsSitesSelected.value)
+                    } else {
+                        preferences.edit { it[POST_TYPE_FILTER] = PostType.ARTICLES.type }
+                    }
                 }
         }
     }
 
-    private fun loadPosts(
+    private suspend fun resetAndLoadPosts(postType: PostType, newsSites: String) {
+        posts.value = null
+        nextPageToLoad.value = 0
+        showError.value = false
+        loadPosts(postType = postType, newsSites = newsSites)
+    }
+
+    private suspend fun loadPosts(
         page: Int = 0,
         postType: PostType = PostType.ARTICLES,
         newsSites: String = ""
-    ) = viewModelScope.launch {
+    ) {
         val offset = if (page == 0) 0 else (page * 10)
+        
         postService.getArticles(
             postType = postType,
             offset = offset,
             newsSites = newsSites
         ).fold(
             onSuccess = { data ->
-                posts.update { ((it ?: emptyList()) + (data.results)) }
+                posts.update { currentPosts ->
+                    if (page == 0) data.results else (currentPosts.orEmpty() + data.results)
+                }
                 loadingNextPage.value = false
+                showLoadPageError.value = false
             },
-            onFailure = {
-                logMessage("PostViewModel", it.message ?: "Unknown")
-                showError.value = true
+            onFailure = { throwable ->
+                logMessage("PostViewModel", throwable.message ?: "Unknown error")
+                if (page == 0) {
+                    showError.value = true
+                } else {
+                    showLoadPageError.value = true
+                }
+                loadingNextPage.value = false
             }
         )
     }
 
-    private fun loadInfo() = viewModelScope.launch {
-        infoService.getInfo()
-            .fold(
-                onSuccess = { data ->
-                    newsSites.value = data.newsSites
-                }, onFailure = {
-                    // No-op
-                }
-            )
+    private suspend fun loadInfo() {
+        infoService.getInfo().fold(
+            onSuccess = { data ->
+                newsSites.value = data.newsSites
+            },
+            onFailure = { 
+                // Silently fail for info loading
+            }
+        )
     }
 
     fun loadNextPage() {
-        if (!loadingNextPage.value) {
+        if (loadingNextPage.value) return
+        
+        viewModelScope.launch {
             loadingNextPage.value = true
-            nextPageToLoad.value += 1
+            nextPageToLoad.update { it + 1 }
+            
+            val currentState = state.value
+            val postType = if (currentState is ViewState.Success) {
+                currentState.posts.firstOrNull()?.postType ?: PostType.ARTICLES
+            } else {
+                PostType.ARTICLES
+            }
+            
             loadPosts(
                 page = nextPageToLoad.value,
-                postType = postTypeSelected.value,
+                postType = postType,
                 newsSites = newsSitesSelected.value
             )
         }
