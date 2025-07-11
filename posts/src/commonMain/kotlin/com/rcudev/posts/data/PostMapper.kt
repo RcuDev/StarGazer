@@ -12,6 +12,8 @@ import com.rcudev.posts.domain.model.Posts
 import kotlinx.datetime.*
 import kotlinx.datetime.format.FormatStringsInDatetimeFormats
 import kotlinx.datetime.format.byUnicodePattern
+import kotlin.time.ExperimentalTime
+import kotlin.time.Instant
 
 internal fun PostsResponse.toPosts(postType: PostType) = Posts(
     count = count,
@@ -20,6 +22,7 @@ internal fun PostsResponse.toPosts(postType: PostType) = Posts(
     results = results.map { it.toPost(postType) }
 )
 
+@OptIn(ExperimentalTime::class)
 private fun PostResponse.toPost(postType: PostType) = Post(
     id = id,
     postType = postType,
@@ -47,6 +50,7 @@ private val EventResponse.toEvent
         provider = provider
     )
 
+@ExperimentalTime
 @OptIn(FormatStringsInDatetimeFormats::class)
 private val String.asFormattedDate: String
     get() {
