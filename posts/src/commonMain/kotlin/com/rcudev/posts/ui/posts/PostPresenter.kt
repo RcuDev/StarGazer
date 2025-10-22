@@ -123,7 +123,7 @@ private fun postPresenterLogic(
                             it[NEWS_SITES_FILTER] = event.site
                         }
 
-                        loadPosts(
+                        state = loadPosts(
                             state = state,
                             postService = postService
                         )
@@ -142,7 +142,7 @@ private fun postPresenterLogic(
                             it[POST_TYPE_FILTER] = event.post.type
                         }
 
-                        loadPosts(
+                        state = loadPosts(
                             state = state,
                             postService = postService
                         )
