@@ -36,10 +36,6 @@ kotlin {
             implementation(compose.components.uiToolingPreview)
         }
     }
-
-    composeCompiler {
-        featureFlags.addAll(ComposeFeatureFlag.OptimizeNonSkippingGroups)
-    }
 }
 
 android {

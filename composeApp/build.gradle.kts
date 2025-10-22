@@ -26,11 +26,6 @@ kotlin {
         }
 
         instrumentedTestVariant.sourceSetTree.set(KotlinSourceSetTree.test)
-
-        dependencies {
-            androidTestImplementation(libs.androidx.ui.test.junit4.android)
-            debugImplementation(libs.androidx.ui.test.manifest)
-        }
     }
     
     listOf(
@@ -69,6 +64,7 @@ kotlin {
             implementation(compose.runtime)
             implementation(compose.foundation)
             implementation(compose.material3)
+            implementation(compose.materialIconsExtended)
             implementation(compose.ui)
             implementation(compose.components.resources)
             implementation(compose.components.uiToolingPreview)
@@ -141,6 +137,8 @@ android {
         compose = true
     }
     dependencies {
+        androidTestImplementation(libs.androidx.ui.test.junit4.android)
+        debugImplementation(libs.androidx.ui.test.manifest)
         debugImplementation(compose.uiTooling)
     }
 }

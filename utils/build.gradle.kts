@@ -39,10 +39,6 @@ kotlin {
             implementation(libs.coil.ktor)
         }
     }
-
-    composeCompiler {
-        featureFlags.addAll(ComposeFeatureFlag.OptimizeNonSkippingGroups)
-    }
 }
 
 android {

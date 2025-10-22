@@ -27,11 +27,6 @@ kotlin {
         }
 
         instrumentedTestVariant.sourceSetTree.set(KotlinSourceSetTree.test)
-
-        dependencies {
-            androidTestImplementation(libs.androidx.ui.test.junit4.android)
-            debugImplementation(libs.androidx.ui.test.manifest)
-        }
     }
 
     listOf(
@@ -90,10 +85,6 @@ kotlin {
             implementation(compose.uiTest)
         }
     }
-
-    composeCompiler {
-        featureFlags.addAll(ComposeFeatureFlag.OptimizeNonSkippingGroups)
-    }
 }
 
 android {
@@ -111,6 +102,10 @@ android {
     }
     buildFeatures {
         compose = true
+    }
+    dependencies {
+        androidTestImplementation(libs.androidx.ui.test.junit4.android)
+        debugImplementation(libs.androidx.ui.test.manifest)
     }
 }
 
