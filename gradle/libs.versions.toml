@@ -18,8 +18,12 @@ dateTime = "0.7.1"
 coroutines-test = "1.10.2"
 mokkery = "2.10.1"
 uiTestManifest = "1.9.3"
+molecule = "2.2.0"
 
 [libraries]
+
+# Architecture
+molecule-runtime = { group = "app.cash.molecule", name = "molecule-runtime", version.ref = "molecule" }
 
 # Coil
 coil = { group = "io.coil-kt.coil3", name = "coil", version.ref = "coil" }

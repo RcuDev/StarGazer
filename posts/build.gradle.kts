@@ -12,7 +12,7 @@ plugins {
     alias(libs.plugins.jetbrainsCompose)
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.mokkery)
-    kotlin("plugin.serialization") version "2.1.0"
+    kotlin("plugin.serialization") version "2.2.0"
 }
 
 mokkery {
@@ -53,6 +53,9 @@ kotlin {
             implementation(compose.ui)
             implementation(compose.components.resources)
             implementation(compose.components.uiToolingPreview)
+
+            // Architecture
+            implementation(libs.molecule.runtime)
 
             // ViewModel
             implementation(libs.androidx.lifecycle.viewmodel)
