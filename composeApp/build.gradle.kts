@@ -97,10 +97,6 @@ kotlin {
             implementation(compose.uiTest)
         }
     }
-
-    composeCompiler {
-        featureFlags.addAll(ComposeFeatureFlag.OptimizeNonSkippingGroups)
-    }
 }
 
 android {
