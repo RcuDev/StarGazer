@@ -38,7 +38,7 @@ kotlin {
     }
 
     composeCompiler {
-        featureFlags.addAll(ComposeFeatureFlag.StrongSkipping, ComposeFeatureFlag.OptimizeNonSkippingGroups)
+        featureFlags.addAll(ComposeFeatureFlag.OptimizeNonSkippingGroups)
     }
 }
 

@@ -9,9 +9,14 @@ import com.rcudev.posts.domain.model.Launch
 import com.rcudev.posts.domain.model.Post
 import com.rcudev.posts.domain.model.PostType
 import com.rcudev.posts.domain.model.Posts
-import kotlinx.datetime.*
+import kotlinx.datetime.LocalDateTime
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.format
 import kotlinx.datetime.format.FormatStringsInDatetimeFormats
 import kotlinx.datetime.format.byUnicodePattern
+import kotlinx.datetime.toLocalDateTime
+import kotlin.time.ExperimentalTime
+import kotlin.time.Instant
 
 internal fun PostsResponse.toPosts(postType: PostType) = Posts(
     count = count,
@@ -47,7 +52,7 @@ private val EventResponse.toEvent
         provider = provider
     )
 
-@OptIn(FormatStringsInDatetimeFormats::class)
+@OptIn(FormatStringsInDatetimeFormats::class, ExperimentalTime::class)
 private val String.asFormattedDate: String
     get() {
         val instant = Instant.parse(this)
