@@ -4,7 +4,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import com.rcudev.posts.ui.ViewState
+import com.rcudev.posts.ui.posts.ViewState
 import com.rcudev.posts.ui.settings.FilterDropDown
 
 @Composable

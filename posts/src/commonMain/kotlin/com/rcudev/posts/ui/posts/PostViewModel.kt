@@ -10,7 +10,7 @@ import com.rcudev.posts.domain.InfoService
 import com.rcudev.posts.domain.PostService
 import com.rcudev.posts.domain.model.Post
 import com.rcudev.posts.domain.model.PostType
-import com.rcudev.posts.ui.ViewState
+import com.rcudev.posts.ui.posts.ViewState
 import com.rcudev.storage.NEWS_SITES_FILTER
 import com.rcudev.storage.POST_TYPE_FILTER
 import com.rcudev.utils.logMessage
