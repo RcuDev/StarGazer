@@ -22,6 +22,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -82,7 +83,7 @@ private fun postPresenterLogic(
             prefs[NEWS_SITES_FILTER] ?: ""
         }.collectAsState(initial = "")
 
-    // Load news sites
+    //  Load news sites and initial post
     LaunchedEffect(Unit) {
         infoService.getInfo().fold(
             onSuccess = { data ->
@@ -91,6 +92,7 @@ private fun postPresenterLogic(
                     newsSiteSelected = newsSitePreferences.takeIf { it.isNotEmpty() } ?: data.newsSites.firstOrNull() ?: "",
                     postTypeSelected = PostType.entries.find { it.type == postTypePreference } ?: PostType.ARTICLES
                 )
+                state = loadPosts(state, postService)
             }, onFailure = {
                 // No-op
             }
@@ -99,12 +101,8 @@ private fun postPresenterLogic(
 
     // Handle events
     LaunchedEffect(Unit) {
-        events.collect { event ->
+        events.collectLatest { event ->
             when (event) {
-                is PostEvent.LoadPost -> {
-                    state = state.copy(isLoading = true, error = null)
-                    state = loadPosts(state, postService)
-                }
                 is PostEvent.LoadNextPage -> {
                     if (state.hasMorePages && !state.loadingNextPage) {
                         state = state.copy(loadingNextPage = true)
@@ -172,13 +170,13 @@ private suspend fun loadPosts(
         newsSites = state.newsSiteSelected
     ).fold(
         onSuccess = { posts ->
-            loadPostsState = state.copy(
+            loadPostsState = loadPostsState.copy(
                 posts = state.posts + posts.results,
                 isLoading = false,
                 hasMorePages = posts.results.isNotEmpty()
             )
         }, onFailure = {
-            loadPostsState = state.copy(
+            loadPostsState = loadPostsState.copy(
                 isLoading = false,
                 error = it.message
             )

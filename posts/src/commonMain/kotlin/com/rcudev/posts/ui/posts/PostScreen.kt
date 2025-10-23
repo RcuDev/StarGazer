@@ -19,10 +19,6 @@ internal fun PostScreen(
 ) {
 
     LaunchedEffect(Unit) {
-        onEvent(PostEvent.LoadPost)
-    }
-
-    LaunchedEffect(Unit) {
         presenter.effects.collect { effect ->
             when (effect) {
                 is PostEffect.NavigateToUrl -> onPostClick(effect.url)
