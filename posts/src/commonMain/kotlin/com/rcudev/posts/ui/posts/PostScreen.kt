@@ -4,12 +4,13 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import com.rcudev.posts.ui.posts.ViewState
 import com.rcudev.posts.ui.settings.FilterDropDown
 
 @Composable
 internal fun PostScreen(
-    vm: PostViewModel,
+    presenter: PostPresenter,
+    state: PostState,
+    onEvent: (PostEvent) -> Unit,
     showSettings: () -> Boolean,
     hideSettings: () -> Unit,
     showSnackBar: (String) -> Unit,
@@ -17,12 +18,35 @@ internal fun PostScreen(
     finishSplash: () -> Unit = {}
 ) {
 
-    val viewState by vm.state.collectAsState()
-    val newsSites by vm.newsSites.collectAsState()
+    LaunchedEffect(Unit) {
+        onEvent(PostEvent.LoadPost)
+    }
 
-    LaunchedEffect(viewState) {
-        if (viewState !is ViewState.Loading) {
+    LaunchedEffect(Unit) {
+        presenter.effects.collect { effect ->
+            when (effect) {
+                is PostEffect.NavigateToUrl -> onPostClick(effect.url)
+                is PostEffect.ShowError -> showSnackBar(effect.message)
+            }
+        }
+    }
+
+    LaunchedEffect(state.isLoading) {
+        if (!state.isLoading) {
             finishSplash()
+        }
+    }
+
+    val viewState = remember(state) {
+        when {
+            state.error != null -> ViewState.Error
+            state.posts.isEmpty() && !state.isLoading -> ViewState.Empty("No post found")
+            state.posts.isNotEmpty() -> ViewState.Success(
+                posts = state.posts,
+                loadingNextPage = state.loadingNextPage,
+                loadingError = false
+            )
+            else -> ViewState.Loading
         }
     }
 
@@ -32,18 +56,25 @@ internal fun PostScreen(
     ) {
         PostContent(
             viewState = viewState,
-            loadNextPage = vm::loadNextPage,
+            loadNextPage = {
+                onEvent(PostEvent.LoadNextPage)
+            },
             showSnackBar = {
                 showSnackBar("Loading more post")
             },
-            onItemClick = onPostClick
+            onItemClick = { url ->
+                onEvent(PostEvent.OnPostClick(url))
+            }
         )
 
         if (showSettings()) {
             FilterDropDown(
-                newsSites = newsSites,
-                newsSitesSelected = vm.newsSitesSelected.value,
-                onDismissRequest = hideSettings
+                newsSites = state.newsSites,
+                newsSitesSelected = state.newsSiteSelected,
+                onDismissRequest = hideSettings,
+                onNewsSiteChange = {
+                    onEvent(PostEvent.SelectNewsSite(it))
+                }
             )
         }
     }

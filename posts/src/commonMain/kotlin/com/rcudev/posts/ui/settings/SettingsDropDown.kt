@@ -27,6 +27,7 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import com.rcudev.ds.theme.Typography
+import com.rcudev.posts.domain.model.PostType
 import com.rcudev.storage.DARK_MODE
 import com.rcudev.storage.NEWS_SITES_FILTER
 import com.rcudev.utils.LocalScreenSize
@@ -40,7 +41,8 @@ fun FilterDropDown(
     preferences: DataStore<Preferences> = koinInject(),
     newsSites: List<String>,
     newsSitesSelected: String?,
-    onDismissRequest: () -> Unit = {}
+    onDismissRequest: () -> Unit = {},
+    onNewsSiteChange: ((String) -> Unit)? = null
 ) {
     val screenSize = LocalScreenSize.current
     val scope = rememberCoroutineScope()
@@ -103,11 +105,7 @@ fun FilterDropDown(
         },
         confirmButton = {
             Button(onClick = {
-                scope.launch {
-                    preferences.edit {
-                        it[NEWS_SITES_FILTER] = selectedNewsSites.joinToString(",")
-                    }
-                }
+                onNewsSiteChange?.invoke(selectedNewsSites.joinToString(","))
                 onDismissRequest()
             }) {
                 Text("Confirm")

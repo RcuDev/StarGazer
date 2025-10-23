@@ -57,9 +57,6 @@ kotlin {
             // Architecture
             implementation(libs.molecule.runtime)
 
-            // ViewModel
-            implementation(libs.androidx.lifecycle.viewmodel)
-
             // Serialization
             implementation(libs.kotlinx.serialization)
 

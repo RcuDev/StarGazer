@@ -34,19 +34,23 @@ class PostPresenter(
 ) {
 
     private val events = MutableSharedFlow<PostEvent>()
+    private val effectChannel = MutableSharedFlow<PostEffect>()
 
     val state: StateFlow<PostState> = moleculeFlow(RecompositionMode.Immediate) {
         postPresenterLogic(
             events = events,
             postService = postService,
             infoService = infoService,
-            preferences = preferences
+            preferences = preferences,
+            effectChannel = effectChannel
         )
     }.stateIn(
         scope = scope,
         started = SharingStarted.WhileSubscribed(5000),
         initialValue = PostState()
     )
+
+    val effects: Flow<PostEffect> = effectChannel
 
     fun sendEvent(event: PostEvent) {
         scope.launch {
@@ -60,7 +64,8 @@ private fun postPresenterLogic(
     events: Flow<PostEvent>,
     postService: PostService,
     infoService: InfoService,
-    preferences: DataStore<Preferences>
+    preferences: DataStore<Preferences>,
+    effectChannel: MutableSharedFlow<PostEffect>
 ): PostState {
 
     var state by remember { mutableStateOf(PostState()) }
@@ -107,8 +112,7 @@ private fun postPresenterLogic(
                     }
                 }
                 is PostEvent.OnPostClick -> {
-                    // TODO: only log for now
-                    println("Post clicked: ${event.url}")
+                    effectChannel.tryEmit(PostEffect.NavigateToUrl(event.url))
                 }
                 is PostEvent.SelectNewsSite -> {
                     if (state.newsSiteSelected != event.site) {
