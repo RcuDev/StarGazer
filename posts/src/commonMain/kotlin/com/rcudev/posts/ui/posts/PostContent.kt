@@ -38,24 +38,23 @@ import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import com.rcudev.ds.theme.Typography
 import com.rcudev.posts.domain.model.Post
-import com.rcudev.posts.ui.posts.ViewState
 import com.rcudev.utils.LocalImageLoader
 import com.rcudev.utils.logMessage
 
 @Composable
 internal fun PostContent(
-    viewState: ViewState,
+    state: PostState,
     loadNextPage: () -> Unit,
     showSnackBar: () -> Unit,
     onItemClick: (String) -> Unit,
 ) {
-    when (viewState) {
-        ViewState.Loading -> Loading()
-        ViewState.Error -> Error()
-        is ViewState.Empty -> Empty(viewState.message)
-        is ViewState.Success -> Success(
-            posts = viewState.posts,
-            loadingNextPage = viewState.loadingNextPage,
+    when {
+        state.isLoading && state.posts.isEmpty() -> Loading()
+        state.error != null -> Error()
+        state.posts.isEmpty() && !state.isLoading -> Empty(message = "No post found")
+        state.posts.isNotEmpty() -> Success(
+            posts = state.posts,
+            loadingNextPage = state.loadingNextPage,
             loadNextPage = loadNextPage,
             showSnackBar = showSnackBar,
             onItemClick = onItemClick

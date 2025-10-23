@@ -33,25 +33,12 @@ internal fun PostScreen(
         }
     }
 
-    val viewState = remember(state) {
-        when {
-            state.error != null -> ViewState.Error
-            state.posts.isEmpty() && !state.isLoading -> ViewState.Empty("No post found")
-            state.posts.isNotEmpty() -> ViewState.Success(
-                posts = state.posts,
-                loadingNextPage = state.loadingNextPage,
-                loadingError = false
-            )
-            else -> ViewState.Loading
-        }
-    }
-
     Box(
         modifier = Modifier
             .fillMaxSize()
     ) {
         PostContent(
-            viewState = viewState,
+            state = state,
             loadNextPage = {
                 onEvent(PostEvent.LoadNextPage)
             },

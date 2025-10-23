@@ -26,32 +26,29 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import org.koin.compose.koinInject
 
 class PostPresenter(
     private val postService: PostService,
     private val infoService: InfoService,
-    private val preferences: DataStore<Preferences>,
     private val scope: CoroutineScope
 ) {
 
     private val events = MutableSharedFlow<PostEvent>()
-    private val effectChannel = MutableSharedFlow<PostEffect>()
+    val effects = MutableSharedFlow<PostEffect>()
 
     val state: StateFlow<PostState> = moleculeFlow(RecompositionMode.Immediate) {
         postPresenterLogic(
             events = events,
             postService = postService,
             infoService = infoService,
-            preferences = preferences,
-            effectChannel = effectChannel
+            effects = effects
         )
     }.stateIn(
         scope = scope,
         started = SharingStarted.WhileSubscribed(5000),
         initialValue = PostState()
     )
-
-    val effects: Flow<PostEffect> = effectChannel
 
     fun sendEvent(event: PostEvent) {
         scope.launch {
@@ -62,11 +59,11 @@ class PostPresenter(
 
 @Composable
 private fun postPresenterLogic(
+    preferences: DataStore<Preferences> = koinInject(),
     events: Flow<PostEvent>,
     postService: PostService,
     infoService: InfoService,
-    preferences: DataStore<Preferences>,
-    effectChannel: MutableSharedFlow<PostEffect>
+    effects: MutableSharedFlow<PostEffect>
 ): PostState {
 
     var state by remember { mutableStateOf(PostState()) }
@@ -110,11 +107,12 @@ private fun postPresenterLogic(
                     }
                 }
                 is PostEvent.OnPostClick -> {
-                    effectChannel.tryEmit(PostEffect.NavigateToUrl(event.url))
+                    effects.emit(PostEffect.NavigateToUrl(event.url))
                 }
                 is PostEvent.SelectNewsSite -> {
                     if (state.newsSiteSelected != event.site) {
                         state = state.copy(
+                            isLoading = true,
                             newsSiteSelected = event.site,
                             posts = emptyList(),
                             hasMorePages = true
@@ -134,6 +132,7 @@ private fun postPresenterLogic(
                 is PostEvent.SelectPostType -> {
                     if (state.postTypeSelected != event.post) {
                         state = state.copy(
+                            isLoading = true,
                             postTypeSelected = event.post,
                             posts = emptyList(),
                             hasMorePages = true
