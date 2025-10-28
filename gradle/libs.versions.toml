@@ -6,20 +6,25 @@ android-targetSdk = "36"
 androidx-activityCompose = "1.11.0"
 androidx-lifecycle = "2.9.5"
 compose-plugin = "1.9.1"
-kotlin = "2.2.20"
+kotlin = "2.2.21"
 coil = "3.3.0"
 koin = "4.1.1"
 ktor = "3.3.1"
+molecule = "2.2.0"
 navigationCompose = "2.9.1"
 kotlinx-serialization = "1.9.0"
 dataStore = "1.1.7"
 splash = "1.0.1"
 dateTime = "0.7.1"
 coroutines-test = "1.10.2"
-mokkery = "2.10.1"
-uiTestManifest = "1.9.3"
+mokkery = "2.10.2"
+uiTestManifest = "1.9.4"
+turbine = "1.2.1"
 
 [libraries]
+
+# Arch
+molecule-runtime = { group = "app.cash.molecule", name = "molecule-runtime", version.ref = "molecule" }
 
 # Coil
 coil = { group = "io.coil-kt.coil3", name = "coil", version.ref = "coil" }
@@ -54,6 +59,7 @@ kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotl
 coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "coroutines-test" }
 androidx-ui-test-junit4-android = { module = "androidx.compose.ui:ui-test-junit4-android", version.ref = "uiTestManifest" }
 androidx-ui-test-manifest = { module = "androidx.compose.ui:ui-test-manifest", version.ref = "uiTestManifest" }
+turbine = { group = "app.cash.turbine", name = "turbine", version.ref = "turbine" }
 
 kotlinx-serialization = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-serialization" }
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "androidx-activityCompose" }
