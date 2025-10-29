@@ -2,7 +2,7 @@ package com.rcudev.posts.data.remote
 
 import com.rcudev.network.KtorApi
 import com.rcudev.posts.data.model.InfoResponse
-import com.rcudev.posts.data.toInfo
+import com.rcudev.posts.data.mapper.toInfo
 import com.rcudev.posts.domain.InfoService
 import io.ktor.client.call.body
 import io.ktor.client.request.get

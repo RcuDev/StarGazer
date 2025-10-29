@@ -2,7 +2,7 @@ package com.rcudev.posts.data.remote
 
 import com.rcudev.network.KtorApi
 import com.rcudev.posts.data.model.PostsResponse
-import com.rcudev.posts.data.toPosts
+import com.rcudev.posts.data.mapper.toPosts
 import com.rcudev.posts.domain.PostService
 import com.rcudev.posts.domain.model.PostType
 import io.ktor.client.call.body

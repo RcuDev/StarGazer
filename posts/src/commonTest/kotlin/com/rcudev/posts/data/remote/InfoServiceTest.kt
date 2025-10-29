@@ -1,7 +1,7 @@
 package com.rcudev.posts.data.remote
 
 import com.rcudev.posts.data.model.InfoResponse
-import com.rcudev.posts.data.toInfo
+import com.rcudev.posts.data.mapper.toInfo
 import com.rcudev.posts.domain.InfoService
 import dev.mokkery.MockMode
 import dev.mokkery.answering.returns

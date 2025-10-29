@@ -1,4 +1,4 @@
-package com.rcudev.posts.data
+package com.rcudev.posts.data.mapper
 
 import com.rcudev.posts.data.model.EventResponse
 import com.rcudev.posts.data.model.LaunchResponse
