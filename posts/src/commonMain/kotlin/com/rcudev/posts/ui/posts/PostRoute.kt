@@ -9,7 +9,7 @@ fun PostRoute(
     showSettings: () -> Boolean,
     hideSettings: () -> Unit,
     showSnackBar: (String) -> Unit,
-    onPostClick: (String) -> Unit,
+    onNavigateToWebView: (String) -> Unit,
     finishSplash: () -> Unit = {}
 ) {
     PostScreen(
@@ -17,7 +17,7 @@ fun PostRoute(
         showSettings = showSettings,
         hideSettings = hideSettings,
         showSnackBar = showSnackBar,
-        onPostClick = onPostClick,
+        onNavigateToWebView = onNavigateToWebView,
         finishSplash = finishSplash
     )
 }

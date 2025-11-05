@@ -19,9 +19,10 @@ sealed interface PostEvent {
     data object LoadNextPage : PostEvent
     data object Retry : PostEvent
     data object DismissLoadPageError : PostEvent
+    data class OnPostClick(val url: String) : PostEvent
 }
 
 // Side effects
 sealed interface PostEffect {
-    data class ShowError(val message: String) : PostEffect
+    data class NavigateToWebView(val url: String) : PostEffect
 }

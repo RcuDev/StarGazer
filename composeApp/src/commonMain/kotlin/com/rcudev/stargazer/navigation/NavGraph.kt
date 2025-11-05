@@ -25,7 +25,7 @@ internal fun NavGraph(
                 showSnackBar = showSnackBar,
                 showSettings = showSettings,
                 hideSettings = hideSettings,
-                onPostClick = { url ->
+                onNavigateToWebView = { url ->
                     navController.navigate(WebView(url = url))
                 },
                 finishSplash = finishSplash

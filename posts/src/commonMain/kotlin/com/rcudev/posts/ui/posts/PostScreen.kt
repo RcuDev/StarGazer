@@ -15,11 +15,21 @@ internal fun PostScreen(
     showSettings: () -> Boolean,
     hideSettings: () -> Unit,
     showSnackBar: (String) -> Unit,
-    onPostClick: (String) -> Unit,
+    onNavigateToWebView: (String) -> Unit,
     finishSplash: () -> Unit = {}
 ) {
 
     val state  by vm.state.collectAsState()
+
+    LaunchedEffect(Unit) {
+        vm.effects.collect { effect ->
+            when (effect) {
+                is PostEffect.NavigateToWebView -> {
+                    onNavigateToWebView(effect.url)
+                }
+            }
+        }
+    }
 
     LaunchedEffect(state) {
         if (state !is PostState.Loading) {
@@ -44,7 +54,7 @@ internal fun PostScreen(
                     posts = currentState.posts,
                     loadingNextPage = currentState.loadingNextPage,
                     onLoadNextPage = vm::loadNextPage,
-                    onItemClick = onPostClick
+                    onItemClick = vm::onPostClick
                 )
 
                 if (showSettings()) {

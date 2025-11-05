@@ -15,9 +15,12 @@ import com.rcudev.posts.domain.model.PostType
 import com.rcudev.storage.NEWS_SITES_FILTER
 import com.rcudev.storage.POST_TYPE_FILTER
 import com.rcudev.utils.logMessage
+import kotlinx.coroutines.channels.BufferOverflow
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.distinctUntilChangedBy
+import kotlinx.coroutines.flow.receiveAsFlow
 
 
 class PostPresenter(
@@ -26,7 +29,7 @@ class PostPresenter(
 ) {
 
     @Composable
-    fun present(events: Flow<PostEvent>): PostState {
+    fun present(events: Flow<PostEvent>): Pair<PostState, Flow<PostEffect>> {
 
         // Mutable local state (private to presenter)
         var posts by remember { mutableStateOf<List<Post>?>(null) }
@@ -36,6 +39,14 @@ class PostPresenter(
         var showError by remember { mutableStateOf(false) }
         var showLoadPageError by remember { mutableStateOf(false) }
         var nextPageToLoad by remember { mutableIntStateOf(0) }
+
+        val effectChannel = remember {
+            MutableSharedFlow<PostEffect>(
+                replay = 0,
+                extraBufferCapacity = Int.MAX_VALUE,
+                onBufferOverflow = BufferOverflow.DROP_OLDEST
+            )
+        }
 
         // DataStore preferences observer
         LaunchedEffect(Unit) {
@@ -74,6 +85,7 @@ class PostPresenter(
         LaunchedEffect(Unit) {
             events.collect { event ->
                 when (event) {
+                    is PostEvent.OnPostClick -> effectChannel.tryEmit(PostEffect.NavigateToWebView(event.url))
                     PostEvent.DismissLoadPageError -> showLoadPageError = false
                     PostEvent.LoadNextPage -> {
                         if (!loadingNextPage && posts != null) {
@@ -113,12 +125,11 @@ class PostPresenter(
                             }
                         )
                     }
-
                 }
             }
         }
 
-        return when {
+        val state = when {
             showError -> PostState.Error
             posts == null -> PostState.Loading
             posts?.isEmpty() == true -> PostState.Empty("No posts found")
@@ -129,6 +140,8 @@ class PostPresenter(
             )
             else -> PostState.Loading
         }
+
+        return state to effectChannel
     }
 
     private suspend fun loadPosts(
