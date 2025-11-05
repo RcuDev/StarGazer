@@ -39,7 +39,7 @@ private val viewModels = module {
 }
 
 @Composable
-fun getDiModules() = listOf(
+fun getPostDiModules() = listOf(
     preferences(),
     services,
     presenters,

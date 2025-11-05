@@ -12,6 +12,7 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.mutablePreferencesOf
 import com.rcudev.posts.domain.model.PostType
+import com.rcudev.stargazer.ui.components.topbar.TopBar
 import com.rcudev.storage.POST_TYPE_FILTER
 import dev.mokkery.MockMode
 import dev.mokkery.answering.returns

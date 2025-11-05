@@ -23,7 +23,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.rcudev.stargazer.navigation.NavGraph
 import com.rcudev.stargazer.navigation.WebView
-import com.rcudev.stargazer.ui.components.TopBar
+import com.rcudev.stargazer.ui.components.topbar.TopBar
 import kotlinx.coroutines.launch
 
 @Composable

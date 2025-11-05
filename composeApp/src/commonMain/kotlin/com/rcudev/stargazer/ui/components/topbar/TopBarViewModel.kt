@@ -1,4 +1,4 @@
-package com.rcudev.posts.ui.settings
+package com.rcudev.stargazer.ui.components.topbar
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -8,26 +8,22 @@ import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.StateFlow
 
-class SettingsViewModel(
-    private val presenter: SettingsPresenter
+class TopBarViewModel(
+    private val presenter: TopBarPresenter
 ) : ViewModel() {
 
-    private val events = MutableSharedFlow<SettingsEvent>(
+    private val events = MutableSharedFlow<TopBarEvent>(
         extraBufferCapacity = 64,
         onBufferOverflow = BufferOverflow.DROP_OLDEST
     )
 
-    val state: StateFlow<SettingsState> = viewModelScope.launchMolecule(
+    val state: StateFlow<TopBarState> = viewModelScope.launchMolecule(
         mode = RecompositionMode.Immediate
     ) {
         presenter.present(events)
     }
 
-    fun selectNewsSite(newsSite: String) {
-        events.tryEmit(SettingsEvent.SelectNewsSite(newsSite))
-    }
-
-    fun toggleDarkMode(isEnabled: Boolean) {
-        events.tryEmit(SettingsEvent.ToggleDarkMode(isEnabled))
+    fun selectPostType(postType: String) {
+        events.tryEmit(TopBarEvent.SelectPostType(postType))
     }
 }

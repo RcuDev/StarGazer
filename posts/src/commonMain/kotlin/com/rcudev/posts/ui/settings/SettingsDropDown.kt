@@ -35,7 +35,6 @@ fun SettingsDropDown(
     val state by vm.state.collectAsState()
     val screenSize = LocalScreenSize.current
 
-    // Gestión local del estado de selección temporal antes de confirmar
     val selectedNewsSites = remember(state) {
         when (state) {
             is SettingsState.Content -> {

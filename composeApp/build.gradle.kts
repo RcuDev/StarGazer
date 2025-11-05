@@ -69,6 +69,9 @@ kotlin {
             implementation(compose.components.resources)
             implementation(compose.components.uiToolingPreview)
 
+            // Arch
+            implementation(libs.molecule.runtime)
+
             // Serialization
             implementation(libs.kotlinx.serialization)
 

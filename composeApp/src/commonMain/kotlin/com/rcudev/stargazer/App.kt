@@ -8,7 +8,8 @@ import androidx.datastore.preferences.core.Preferences
 import com.rcudev.ds.theme.DarkColorScheme
 import com.rcudev.ds.theme.LightColorScheme
 import com.rcudev.ds.theme.UiTheme
-import com.rcudev.posts.di.getDiModules
+import com.rcudev.posts.di.getPostDiModules
+import com.rcudev.stargazer.di.getDiModules
 import com.rcudev.stargazer.ui.AppContent
 import com.rcudev.storage.DARK_MODE
 import com.rcudev.utils.GetImageLoader
@@ -27,6 +28,7 @@ internal fun App(
 ) {
 
     val diModules = getDiModules()
+        .plus(getPostDiModules())
 
     KoinApplication(application = {
         modules(diModules)
