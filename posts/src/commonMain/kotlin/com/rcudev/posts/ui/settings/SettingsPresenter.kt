@@ -4,14 +4,15 @@ import androidx.compose.runtime.*
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
-import com.rcudev.posts.domain.model.PostType
+import com.rcudev.posts.domain.InfoService
 import com.rcudev.storage.DARK_MODE
 import com.rcudev.storage.NEWS_SITES_FILTER
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
 class SettingsPresenter(
-    private val preferences: DataStore<Preferences>
+    private val preferences: DataStore<Preferences>,
+    private val infoService: InfoService
 ) {
 
     @Composable
@@ -25,7 +26,14 @@ class SettingsPresenter(
             .map { it[DARK_MODE] ?: false }
             .collectAsState(false)
 
-        val newsSites by remember { mutableStateOf(PostType.entries.map { it.type }) }
+        var newsSites by remember { mutableStateOf(emptyList<String>()) }
+
+        LaunchedEffect(Unit) {
+            infoService.getInfo().fold(
+                onSuccess = { data -> newsSites = data.newsSites },
+                onFailure = { /* No-op */ }
+            )
+        }
 
         LaunchedEffect(Unit) {
             events.collect { event ->

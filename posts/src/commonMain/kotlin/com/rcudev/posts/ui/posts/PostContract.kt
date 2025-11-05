@@ -9,9 +9,6 @@ sealed interface PostState {
     data class Empty(val message: String) : PostState
     data class Content(
         val posts: List<Post>,
-        val postTypeSelected: String,
-        val newsSites: List<String>,
-        val newsSitesSelected: String,
         val loadingNextPage: Boolean = false,
         val showLoadPageError: Boolean = false
     ) : PostState

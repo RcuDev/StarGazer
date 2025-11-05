@@ -9,7 +9,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
-import com.rcudev.posts.domain.InfoService
 import com.rcudev.posts.domain.PostService
 import com.rcudev.posts.domain.model.Post
 import com.rcudev.posts.domain.model.PostType
@@ -24,7 +23,6 @@ import kotlinx.coroutines.flow.distinctUntilChangedBy
 class PostPresenter(
     private val preferences: DataStore<Preferences>,
     private val postService: PostService,
-    private val infoService: InfoService
 ) {
 
     @Composable
@@ -33,20 +31,11 @@ class PostPresenter(
         // Mutable local state (private to presenter)
         var posts by remember { mutableStateOf<List<Post>?>(null) }
         var postTypeSelected by remember { mutableStateOf(PostType.ARTICLES) }
-        var newsSites by remember { mutableStateOf(emptyList<String>()) }
         var newsSitesSelected by remember { mutableStateOf("") }
         var loadingNextPage by remember { mutableStateOf(false) }
         var showError by remember { mutableStateOf(false) }
         var showLoadPageError by remember { mutableStateOf(false) }
         var nextPageToLoad by remember { mutableIntStateOf(0) }
-
-        // Load news sites info
-        LaunchedEffect(Unit) {
-            infoService.getInfo().fold(
-                onSuccess = { data -> newsSites = data.newsSites },
-                onFailure = { /* No-op */ }
-            )
-        }
 
         // DataStore preferences observer
         LaunchedEffect(Unit) {
@@ -135,9 +124,6 @@ class PostPresenter(
             posts?.isEmpty() == true -> PostState.Empty("No posts found")
             posts?.isNotEmpty() == true -> PostState.Content(
                 posts = posts!!,
-                postTypeSelected = postTypeSelected.type,
-                newsSites = newsSites,
-                newsSitesSelected = newsSitesSelected,
                 loadingNextPage = loadingNextPage,
                 showLoadPageError = showLoadPageError
             )

@@ -74,7 +74,10 @@ fun SettingsDropDown(
                             modifier = Modifier.padding(bottom = 8.dp)
                         )
 
-                        DarkModeItem(vm = vm)
+                        DarkModeItem(
+                            isDarkMode = currentState.isDarkMode,
+                            onToggleDarkMode = vm::toggleDarkMode
+                        )
 
                         HorizontalDivider(
                             modifier = Modifier.padding(top = 8.dp, bottom = 16.dp)
@@ -127,14 +130,9 @@ fun SettingsDropDown(
 
 @Composable
 fun DarkModeItem(
-    vm: SettingsViewModel
+    isDarkMode: Boolean,
+    onToggleDarkMode: (Boolean) -> Unit
 ) {
-    val state by vm.state.collectAsState()
-
-    val isDarkMode = when (state) {
-        is SettingsState.Content -> (state as SettingsState.Content).isDarkMode
-        else -> false
-    }
 
     Row(
         verticalAlignment = Alignment.CenterVertically,
@@ -148,14 +146,13 @@ fun DarkModeItem(
 
         Switch(
             checked = isDarkMode,
-            onCheckedChange = { isChecked ->
-                vm.toggleDarkMode(isChecked)
-            },
+            onCheckedChange = onToggleDarkMode,
             modifier = Modifier
                 .scale(0.75f)
                 .testTag("DarkModeSwitch")
         )
     }
+
 }
 
 @Composable

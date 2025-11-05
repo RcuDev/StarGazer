@@ -884,15 +884,17 @@ User Action → Event → Presenter → State Update → UI Render
 
 ## ✅ Checklist de Migración
 
-- [ ] Fase 1: Agregar Molecule a dependencias
-- [ ] Fase 2: Crear contratos (PostContract, SettingsContract)
-- [ ] Fase 3: Implementar Presenters con Molecule
-- [ ] Fase 4: Refactorizar UI a componentes puros
-- [ ] Fase 5: Actualizar inyección de dependencias
-- [ ] Fase 6: Eliminar ViewModels y código obsoleto
-- [ ] Fase 7: Crear tests para Presenters
-- [ ] Fase 8: Ejecutar tests existentes y validar
-- [ ] Fase 9: Testing manual en Android e iOS
+- [x] Fase 1: Agregar Molecule a dependencias ✅
+- [x] Fase 2: Crear contratos (PostContract, SettingsContract, TopBarContract) ✅
+- [x] Fase 3: Implementar Presenters con Molecule ✅
+- [x] Fase 4: Refactorizar UI a componentes puros ✅
+- [x] Fase 5: Actualizar inyección de dependencias ✅
+- [ ] **Fase 6: Implementar navegación desde PostPresenter (PENDIENTE)**
+- [ ] **Fase 7: Eliminar ViewModels y código obsoleto (PENDIENTE)**
+- [ ] **Fase 8: Eliminar PostEffect.ShowError no usado (PENDIENTE)**
+- [ ] **Fase 9: Crear tests para Presenters (PENDIENTE)**
+- [ ] **Fase 10: Ejecutar tests existentes y validar (PENDIENTE)**
+- [ ] **Fase 11: Testing manual en Android e iOS (PENDIENTE)**
 
 ---
 
@@ -915,4 +917,371 @@ User Action → Event → Presenter → State Update → UI Render
 
 ---
 
-**Nota**: Esta migración es incremental. Puedes migrar pantalla por pantalla, manteniendo ViewModels y Presenters coexistiendo durante la transición.
+## 🔴 FASES PENDIENTES (ESTADO ACTUAL)
+
+### ✅ COMPLETADAS (Fases 1-5)
+- ✅ **Fase 1**: Molecule agregado a dependencias
+- ✅ **Fase 2**: Contratos creados (`PostContract`, `SettingsContract`, `TopBarContract`)
+- ✅ **Fase 3**: Presenters implementados con Molecule
+- ✅ **Fase 4**: UI refactorizada a componentes puros
+- ✅ **Fase 5**: DI actualizado con Presenters y ViewModels
+
+### 🔴 PENDIENTES
+
+---
+
+### Fase 6: Implementar Navegación desde PostPresenter (CRÍTICO)
+
+#### **PROBLEMA ACTUAL:**
+- La navegación a `WebView` se hace desde `PostScreen` pasando `onPostClick` desde `NavGraph`
+- **NO hay navegación manejada desde el Presenter**, violando UDF
+- El `PostEffect.ShowError` está definido pero **NO SE USA EN NINGÚN SITIO**
+
+#### **SOLUCIÓN:**
+1. **Crear `PostEffect` para navegación**:
+   - Definir `PostEffect.NavigateToWebView(url: String)`
+   - Emitir este efecto cuando se hace click en un post
+
+2. **Modificar `PostContract.kt`**:
+
+```kotlin
+// Side effects
+sealed interface PostEffect {
+    data class NavigateToWebView(val url: String) : PostEffect
+    data class ShowError(val message: String) : PostEffect // Ya existe pero no se usa
+}
+
+// Agregar nuevo evento
+sealed interface PostEvent {
+    data object LoadNextPage : PostEvent
+    data object Retry : PostEvent
+    data object DismissLoadPageError : PostEvent
+    data class OnPostClick(val url: String) : PostEvent // NUEVO
+}
+```
+
+3. **Actualizar `PostPresenter.kt`**:
+
+```kotlin
+@Composable
+fun present(events: Flow<PostEvent>): Pair<PostState, Flow<PostEffect>> {
+    // Canal para effects
+    val effectChannel = remember { Channel<PostEffect>(Channel.UNLIMITED) }
+    
+    // ... código existente ...
+    
+    // Handle user events
+    LaunchedEffect(Unit) {
+        events.collect { event ->
+            when (event) {
+                is PostEvent.OnPostClick -> {
+                    effectChannel.trySend(PostEffect.NavigateToWebView(event.url))
+                }
+                // ... resto de eventos
+            }
+        }
+    }
+    
+    return state to effectChannel.receiveAsFlow()
+}
+```
+
+4. **Actualizar `PostViewModel.kt`**:
+
+```kotlin
+class PostViewModel(
+    private val presenter: PostPresenter
+) : ViewModel() {
+
+    private val events = MutableSharedFlow<PostEvent>(
+        extraBufferCapacity = 64,
+        onBufferOverflow = BufferOverflow.DROP_OLDEST
+    )
+    
+    private val _effects = MutableSharedFlow<PostEffect>(
+        extraBufferCapacity = 64,
+        onBufferOverflow = BufferOverflow.DROP_OLDEST
+    )
+    val effects: Flow<PostEffect> = _effects
+
+    val state: StateFlow<PostState> = viewModelScope.launchMolecule(
+        mode = RecompositionMode.Immediate
+    ) {
+        val (state, effects) = presenter.present(events)
+        
+        LaunchedEffect(Unit) {
+            effects.collect { effect ->
+                _effects.emit(effect)
+            }
+        }
+        
+        state
+    }
+
+    fun onPostClick(url: String) {
+        events.tryEmit(PostEvent.OnPostClick(url))
+    }
+    
+    // ... resto de funciones
+}
+```
+
+5. **Actualizar `PostScreen.kt`** para consumir effects:
+
+```kotlin
+@Composable
+internal fun PostScreen(
+    vm: PostViewModel,
+    showSettings: () -> Boolean,
+    hideSettings: () -> Unit,
+    showSnackBar: (String) -> Unit,
+    onNavigateToWebView: (String) -> Unit, // NUEVO parámetro
+    finishSplash: () -> Unit = {}
+) {
+
+    val state by vm.state.collectAsState()
+    
+    // Consumir effects
+    LaunchedEffect(Unit) {
+        vm.effects.collect { effect ->
+            when (effect) {
+                is PostEffect.NavigateToWebView -> {
+                    onNavigateToWebView(effect.url)
+                }
+                is PostEffect.ShowError -> {
+                    showSnackBar(effect.message)
+                }
+            }
+        }
+    }
+
+    // ... resto del código
+    
+    when (val currentState = state) {
+        is PostState.Content -> {
+            PostsContent(
+                posts = currentState.posts,
+                loadingNextPage = currentState.loadingNextPage,
+                onLoadNextPage = vm::loadNextPage,
+                onItemClick = vm::onPostClick // Ahora llama al VM
+            )
+        }
+        // ...
+    }
+}
+```
+
+6. **Actualizar `PostRoute.kt`**:
+
+```kotlin
+@Composable
+fun PostRoute(
+    vm: PostViewModel = koinInject(),
+    showSettings: () -> Boolean,
+    hideSettings: () -> Unit,
+    showSnackBar: (String) -> Unit,
+    onNavigateToWebView: (String) -> Unit, // NUEVO
+    finishSplash: () -> Unit = {}
+) {
+    PostScreen(
+        vm = vm,
+        showSettings = showSettings,
+        hideSettings = hideSettings,
+        showSnackBar = showSnackBar,
+        onNavigateToWebView = onNavigateToWebView, // Pasar el callback
+        finishSplash = finishSplash
+    )
+}
+```
+
+7. **Actualizar `NavGraph.kt`**:
+
+```kotlin
+composable<Posts> {
+    PostRoute(
+        showSnackBar = showSnackBar,
+        showSettings = showSettings,
+        hideSettings = hideSettings,
+        onNavigateToWebView = { url -> // ACTUALIZADO
+            navController.navigate(WebView(url = url))
+        },
+        finishSplash = finishSplash
+    )
+}
+```
+
+---
+
+### Fase 7: Eliminar `PostEffect.ShowError` NO Usado
+
+#### **PROBLEMA ACTUAL:**
+- `PostEffect.ShowError` está definido en el contrato pero **NO SE USA EN NINGÚN SITIO**
+- El error de carga de página se muestra con `showLoadPageError` en el **estado** (correcto)
+- El error inicial se muestra con `PostState.Error` (correcto)
+
+#### **DECISIÓN:**
+**ELIMINAR** `PostEffect.ShowError` del contrato porque no es necesario. Los errores se manejan con estados.
+
+#### **CAMBIOS:**
+
+1. **Actualizar `PostContract.kt`**:
+
+```kotlin
+// Side effects
+sealed interface PostEffect {
+    data class NavigateToWebView(val url: String) : PostEffect
+    // ELIMINAR: data class ShowError(val message: String) : PostEffect
+}
+```
+
+2. **Actualizar `PostScreen.kt`** (eliminar el manejo del efecto):
+
+```kotlin
+LaunchedEffect(Unit) {
+    vm.effects.collect { effect ->
+        when (effect) {
+            is PostEffect.NavigateToWebView -> {
+                onNavigateToWebView(effect.url)
+            }
+            // ELIMINAR: is PostEffect.ShowError -> showSnackBar(effect.message)
+        }
+    }
+}
+```
+
+**JUSTIFICACIÓN:**
+- Errores de estado inicial → `PostState.Error`
+- Errores de paginación → `PostState.Content.showLoadPageError`
+- **NO necesitamos** un efecto para mostrar errores porque ya están en el estado
+
+---
+
+### Fase 8: Eliminar ViewModels y Código Obsoleto
+
+#### **ARCHIVOS A ELIMINAR:**
+
+1. **`posts/src/commonMain/kotlin/com/rcudev/posts/ui/ViewState.kt`** (Obsoleto, no se usa)
+2. Mantener `PostViewModel.kt`, `SettingsViewModel.kt`, `TopBarViewModel.kt` porque:
+   - Aprovechan `viewModelScope` para manejo de lifecycle
+   - Son el puente entre Molecule y la UI
+   - **SON NECESARIOS EN EL APPROACH ACTUAL**
+
+#### **DECISIÓN CRÍTICA:**
+**NO ELIMINAR ViewModels** porque el approach actual usa:
+- ViewModel para scope
+- Presenter para lógica con Molecule
+- Este es un patrón válido y funcional
+
+---
+
+### Fase 9: Crear Tests para Presenters
+
+#### **Archivos a crear:**
+
+1. **`posts/src/commonTest/kotlin/com/rcudev/posts/ui/posts/PostPresenterTest.kt`**
+2. **`posts/src/commonTest/kotlin/com/rcudev/posts/ui/settings/SettingsPresenterTest.kt`**
+3. **`composeApp/src/commonTest/kotlin/com/rcudev/stargazer/ui/topbar/TopBarPresenterTest.kt`**
+
+#### **Dependencias necesarias:**
+
+```toml
+[versions]
+turbine = "1.1.0"
+
+[libraries]
+turbine = { group = "app.cash.turbine", name = "turbine", version.ref = "turbine" }
+```
+
+```kotlin
+commonTest.dependencies {
+    implementation(libs.turbine)
+}
+```
+
+#### **Ejemplo de test:**
+
+```kotlin
+@Test
+fun `initial state is Loading`() = runTest {
+    val presenter = PostPresenter(
+        preferences = mockPreferences,
+        postService = mockPostService
+    )
+    
+    moleculeFlow(RecompositionMode.Immediate) {
+        presenter.present(emptyFlow())
+    }.test {
+        assertIs<PostState.Loading>(awaitItem())
+    }
+}
+```
+
+---
+
+### Fase 10: Ejecutar Tests Existentes
+
+**Comandos:**
+```bash
+./gradlew test
+./gradlew :posts:test
+./gradlew :composeApp:test
+```
+
+**Validar:**
+- Tests unitarios existentes pasan
+- No hay regresiones
+
+---
+
+### Fase 11: Testing Manual
+
+**Plataformas:**
+1. Android
+2. iOS (si aplica)
+
+**Escenarios:**
+- ✅ Carga inicial de posts
+- ✅ Cambio de tipo de post (Articles/Blogs/Reports)
+- ✅ Filtrado por news site
+- ✅ Scroll infinito (paginación)
+- ✅ Error de carga inicial → Retry
+- ✅ Error de paginación → Snackbar
+- ✅ Navegación a WebView
+- ✅ Dark mode toggle
+- ✅ Settings dropdown
+
+---
+
+## 📊 RESUMEN CRÍTICO DEL ESTADO ACTUAL
+
+### ✅ CORRECTO:
+1. **Arquitectura UDF con Molecule**: Implementado correctamente
+2. **Separación de responsabilidades**: Presenter (lógica) + ViewModel (scope) + UI (render)
+3. **Estados inmutables**: Todos los estados son `sealed interface` + `data class`
+4. **Channels para eventos**: Uso correcto de `MutableSharedFlow` con `extraBufferCapacity`
+5. **TopBar independiente**: Correcto tener su propio Presenter para el filtro de PostType
+6. **Settings independiente**: Correcto tener su propio Presenter para filters y dark mode
+7. **Inyección de dependencias**: Koin configurado correctamente
+
+### 🔴 PROBLEMAS CRÍTICOS:
+1. ❌ **Navegación NO en Presenter**: Se hace desde UI, debe usar `PostEffect`
+2. ❌ **`PostEffect.ShowError` NO SE USA**: Definido pero nunca emitido ni consumido
+3. ⚠️ **Tests NO implementados**: Sin cobertura de tests para Presenters
+
+### ⚠️ MEJORAS RECOMENDADAS:
+1. Considerar usar `SharedFlow` en vez de `Channel` para effects (más idiomático)
+2. Agregar tests con Turbine para validar comportamiento
+3. Documentar el approach ViewModel+Presenter en el README
+
+---
+
+## 🎯 PRÓXIMOS PASOS INMEDIATOS
+
+1. **Implementar navegación con `PostEffect.NavigateToWebView`** (Fase 6)
+2. **Eliminar `PostEffect.ShowError` no usado** (Fase 7)
+3. **Agregar tests básicos** (Fase 9)
+4. **Testing manual completo** (Fase 11)
+
+---
+
+**Nota**: Esta migración usa un approach híbrido ViewModel+Presenter que aprovecha lo mejor de ambos mundos: `viewModelScope` para lifecycle y Molecule para lógica reactiva con UDF.
