@@ -54,6 +54,9 @@ kotlin {
             implementation(compose.components.resources)
             implementation(compose.components.uiToolingPreview)
 
+            // Arch
+            implementation(libs.molecule.runtime)
+
             // ViewModel
             implementation(libs.androidx.lifecycle.viewmodel)
 
@@ -83,6 +86,7 @@ kotlin {
 
             @OptIn(ExperimentalComposeLibrary::class)
             implementation(compose.uiTest)
+            implementation(libs.turbine)
         }
     }
 }
