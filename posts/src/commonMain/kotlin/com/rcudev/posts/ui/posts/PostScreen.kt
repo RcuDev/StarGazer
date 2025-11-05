@@ -5,7 +5,11 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import com.rcudev.posts.ui.ViewState
+import com.rcudev.posts.ui.posts.components.PostsEmpty
+import com.rcudev.posts.ui.posts.components.PostsError
+import com.rcudev.posts.ui.posts.components.PostsLoading
 import com.rcudev.posts.ui.settings.FilterDropDown
+import com.rcudev.posts.ui.settings.SettingsDropDown
 
 @Composable
 internal fun PostScreen(
@@ -17,12 +21,18 @@ internal fun PostScreen(
     finishSplash: () -> Unit = {}
 ) {
 
-    val viewState by vm.state.collectAsState()
-    val newsSites by vm.newsSites.collectAsState()
+    val state  by vm.state.collectAsState()
 
-    LaunchedEffect(viewState) {
-        if (viewState !is ViewState.Loading) {
+    LaunchedEffect(state) {
+        if (state !is PostState.Loading) {
             finishSplash()
+        }
+    }
+
+    LaunchedEffect(state) {
+        if (state is PostState.Content && (state as PostState.Content).showLoadPageError) {
+            showSnackBar("Error loading more posts")
+            vm.dismissLoadPageError()
         }
     }
 
@@ -30,21 +40,25 @@ internal fun PostScreen(
         modifier = Modifier
             .fillMaxSize()
     ) {
-        PostContent(
-            viewState = viewState,
-            loadNextPage = vm::loadNextPage,
-            showSnackBar = {
-                showSnackBar("Loading more post")
-            },
-            onItemClick = onPostClick
-        )
+        when (val currentState = state) {
+            is PostState.Content -> {
+                PostsContent(
+                    posts = currentState.posts,
+                    loadingNextPage = currentState.loadingNextPage,
+                    onLoadNextPage = vm::loadNextPage,
+                    onItemClick = onPostClick
+                )
 
-        if (showSettings()) {
-            FilterDropDown(
-                newsSites = newsSites,
-                newsSitesSelected = vm.newsSitesSelected.value,
-                onDismissRequest = hideSettings
-            )
+                if (showSettings()) {
+                    SettingsDropDown(
+                        onDismissRequest = hideSettings
+                    )
+                }
+
+            }
+            is PostState.Empty -> PostsEmpty(message = currentState.message)
+            is PostState.Error -> PostsError(onRetry = vm::retry)
+            is PostState.Loading -> PostsLoading()
         }
     }
 

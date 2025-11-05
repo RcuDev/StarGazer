@@ -23,128 +23,134 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
-import androidx.datastore.core.DataStore
-import androidx.datastore.preferences.core.Preferences
-import androidx.datastore.preferences.core.edit
 import com.rcudev.ds.theme.Typography
-import com.rcudev.storage.DARK_MODE
-import com.rcudev.storage.NEWS_SITES_FILTER
 import com.rcudev.utils.LocalScreenSize
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.launch
 import org.koin.compose.koinInject
 
 @Composable
-fun FilterDropDown(
-    preferences: DataStore<Preferences> = koinInject(),
-    newsSites: List<String>,
-    newsSitesSelected: String?,
+fun SettingsDropDown(
+    vm: SettingsViewModel = koinInject(),
     onDismissRequest: () -> Unit = {}
 ) {
+    val state by vm.state.collectAsState()
     val screenSize = LocalScreenSize.current
-    val scope = rememberCoroutineScope()
-    val allNewsSites = remember { newsSites.toMutableStateList() }
-    val selectedNewsSites =
-        remember { (newsSitesSelected?.split(",") ?: listOf()).toMutableStateList() }
-    val orderedItems = remember {
-        allNewsSites
-            .sortedByDescending { it in selectedNewsSites }
-            .filter { it.isNotEmpty() }
-            .distinct()
+
+    // Gestión local del estado de selección temporal antes de confirmar
+    val selectedNewsSites = remember(state) {
+        when (state) {
+            is SettingsState.Content -> {
+                val selected = (state as SettingsState.Content).newsSitesSelected
+                    .split(",")
+                    .filter { it.isNotEmpty() }
+                selected.toMutableStateList()
+            }
+            else -> mutableStateListOf()
+        }
     }
 
-    AlertDialog(
-        onDismissRequest = {
-            onDismissRequest()
-        },
-        title = { Text("Settings") },
-        text = {
-            Column {
-                HorizontalDivider(
-                    modifier = Modifier
-                        .padding(bottom = 8.dp)
-                )
-                DarkModeItem(
-                    preferences = preferences,
-                    scope = scope
-                )
-                HorizontalDivider(
-                    modifier = Modifier
-                        .padding(top = 8.dp, bottom = 16.dp)
-                )
-                Text(
-                    text = "News sites",
-                    style = Typography.titleMedium
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-                LazyColumn(
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    items(
-                        items = orderedItems,
-                        key = { it }
-                    ) { newsSite ->
-                        NewsSiteItem(
-                            newsSite = newsSite,
-                            isSelected = newsSite in selectedNewsSites,
-                            onCheckChange = { isChecked ->
-                                if (isChecked) {
-                                    selectedNewsSites.add(newsSite)
-                                } else {
-                                    selectedNewsSites.remove(newsSite)
-                                }
-                            }
+    when (val currentState = state) {
+        is SettingsState.Loading -> {
+            AlertDialog(
+                onDismissRequest = onDismissRequest,
+                title = { Text("Settings") },
+                text = { Text("Loading settings...") },
+                confirmButton = {}
+            )
+        }
+
+        is SettingsState.Content -> {
+            val orderedItems = remember(currentState.newsSites, selectedNewsSites) {
+                currentState.newsSites
+                    .sortedByDescending { it in selectedNewsSites }
+                    .filter { it.isNotEmpty() }
+                    .distinct()
+            }
+
+            AlertDialog(
+                onDismissRequest = onDismissRequest,
+                title = { Text("Settings") },
+                text = {
+                    Column {
+                        HorizontalDivider(
+                            modifier = Modifier.padding(bottom = 8.dp)
                         )
+
+                        DarkModeItem(vm = vm)
+
+                        HorizontalDivider(
+                            modifier = Modifier.padding(top = 8.dp, bottom = 16.dp)
+                        )
+
+                        Text(
+                            text = "News sites",
+                            style = Typography.titleMedium
+                        )
+
+                        Spacer(modifier = Modifier.height(8.dp))
+
+                        LazyColumn(
+                            verticalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            items(
+                                items = orderedItems,
+                                key = { it }
+                            ) { newsSite ->
+                                NewsSiteItem(
+                                    newsSite = newsSite,
+                                    isSelected = newsSite in selectedNewsSites,
+                                    onCheckChange = { isChecked ->
+                                        if (isChecked) {
+                                            selectedNewsSites.add(newsSite)
+                                        } else {
+                                            selectedNewsSites.remove(newsSite)
+                                        }
+                                    }
+                                )
+                            }
+                        }
+
+                        HorizontalDivider()
                     }
-                }
-                HorizontalDivider()
-            }
-        },
-        confirmButton = {
-            Button(onClick = {
-                scope.launch {
-                    preferences.edit {
-                        it[NEWS_SITES_FILTER] = selectedNewsSites.joinToString(",")
+                },
+                confirmButton = {
+                    Button(onClick = {
+                        vm.selectNewsSite(selectedNewsSites.joinToString(","))
+                        onDismissRequest()
+                    }) {
+                        Text("Confirm")
                     }
-                }
-                onDismissRequest()
-            }) {
-                Text("Confirm")
-            }
-        },
-        modifier = Modifier
-            .heightIn(max = (screenSize.height * 0.7f).dp)
-    )
+                },
+                modifier = Modifier.heightIn(max = (screenSize.height * 0.7f).dp)
+            )
+        }
+    }
 }
 
 @Composable
 fun DarkModeItem(
-    preferences: DataStore<Preferences> = koinInject(),
-    scope: CoroutineScope = rememberCoroutineScope()
+    vm: SettingsViewModel
 ) {
-    val isChecked = preferences.data.map { prefs -> prefs[DARK_MODE] }
-        .collectAsState(initial = false)
+    val state by vm.state.collectAsState()
+
+    val isDarkMode = when (state) {
+        is SettingsState.Content -> (state as SettingsState.Content).isDarkMode
+        else -> false
+    }
 
     Row(
         verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier
-            .fillMaxWidth()
+        modifier = Modifier.fillMaxWidth()
     ) {
         Text(
             text = "Dark mode",
             style = Typography.titleMedium,
-            modifier = Modifier
-                .weight(1f)
+            modifier = Modifier.weight(1f)
         )
+
         Switch(
-            checked = isChecked.value == true,
-            onCheckedChange = {
-                scope.launch {
-                    preferences.edit {
-                        it[DARK_MODE] = isChecked.value != true
-                    }
-                }
+            checked = isDarkMode,
+            onCheckedChange = { isChecked ->
+                vm.toggleDarkMode(isChecked)
             },
             modifier = Modifier
                 .scale(0.75f)
@@ -167,7 +173,9 @@ private fun NewsSiteItem(
             checked = isSelected,
             onCheckedChange = onCheckChange
         )
+
         Spacer(modifier = Modifier.width(8.dp))
+
         Text(newsSite)
     }
 }

@@ -5,7 +5,10 @@ import com.rcudev.posts.data.remote.InfoServiceImpl
 import com.rcudev.posts.data.remote.PostServiceImpl
 import com.rcudev.posts.domain.InfoService
 import com.rcudev.posts.domain.PostService
+import com.rcudev.posts.ui.posts.PostPresenter
 import com.rcudev.posts.ui.posts.PostViewModel
+import com.rcudev.posts.ui.settings.SettingsPresenter
+import com.rcudev.posts.ui.settings.SettingsViewModel
 import com.rcudev.storage.dataStoragePreferences
 import org.koin.core.module.Module
 import org.koin.core.module.dsl.singleOf
@@ -25,13 +28,20 @@ private val services = module {
     singleOf<InfoService>(::InfoServiceImpl)
 }
 
+private val presenters = module {
+    singleOf(::PostPresenter)
+    singleOf(::SettingsPresenter)
+}
+
 private val viewModels = module {
     singleOf(::PostViewModel)
+    singleOf(::SettingsViewModel)
 }
 
 @Composable
 fun getDiModules() = listOf(
     preferences(),
     services,
+    presenters,
     viewModels
 )
