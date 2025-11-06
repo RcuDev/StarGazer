@@ -110,7 +110,7 @@ StarGazer/
 ## Tecnologías
 
 ### Tecnologías Core
-*   **Kotlin 2.1.0** - Lenguaje moderno, conciso y seguro
+*   **Kotlin 2.2.21** - Lenguaje moderno, conciso y seguro
 *   **Kotlin Multiplatform** - Comparte código entre Android e iOS
 *   **Jetpack Compose Multiplatform 1.9.2** - Framework de UI declarativa
 
@@ -133,7 +133,7 @@ StarGazer/
 
 ### Testing
 *   **Kotlin Test** - Framework de testing multiplataforma
-*   **Turbine 1.1.0** - Librería de testing para Kotlin Flows
+*   **Turbine 1.2.1** - Librería de testing para Kotlin Flows
 *   **Mokkery 2.10.2** - Librería moderna de mocking (reemplaza a MockK sin mantenimiento)
 *   **Compose UI Test** - Testing de UI para Compose
 
@@ -199,7 +199,7 @@ Esta aplicación utiliza la API gratuita y abierta [spaceflightnewsapi.net](http
 *   **Android Studio** Hedgehog | 2023.1.1 o más reciente
 *   **Xcode** 15+ (para desarrollo iOS)
 *   **JDK** 17 o superior
-*   **Kotlin** 2.1.0
+*   **Kotlin** 2.2.21
 
 ### Ejecutar el Proyecto
 
