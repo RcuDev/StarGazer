@@ -1,6 +1,5 @@
 import dev.mokkery.gradle.ApplicationRule
 import org.jetbrains.compose.ExperimentalComposeLibrary
-import org.jetbrains.kotlin.compose.compiler.gradle.ComposeFeatureFlag
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSetTree

@@ -20,8 +20,6 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.distinctUntilChangedBy
-import kotlinx.coroutines.flow.receiveAsFlow
-
 
 class PostPresenter(
     private val preferences: DataStore<Preferences>,
