@@ -14,6 +14,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Checkbox
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
@@ -47,85 +48,44 @@ fun SettingsDropDown(
         }
     }
 
-    when (val currentState = state) {
-        is SettingsState.Loading -> {
-            AlertDialog(
-                onDismissRequest = onDismissRequest,
-                title = { Text("Settings") },
-                text = { Text("Loading settings...") },
-                confirmButton = {}
-            )
-        }
+    AlertDialog(
+        onDismissRequest = onDismissRequest,
+        title = { Text("Settings") },
+        text = {
 
-        is SettingsState.Content -> {
-            val orderedItems = remember(currentState.newsSites, selectedNewsSites) {
-                currentState.newsSites
-                    .sortedByDescending { it in selectedNewsSites }
-                    .filter { it.isNotEmpty() }
-                    .distinct()
-            }
+            when (val currentState = state) {
+                is SettingsState.Loading -> {
+                    CircularProgressIndicator()
+                }
 
-            AlertDialog(
-                onDismissRequest = onDismissRequest,
-                title = { Text("Settings") },
-                text = {
-                    Column {
-                        HorizontalDivider(
-                            modifier = Modifier.padding(bottom = 8.dp)
-                        )
-
-                        DarkModeItem(
-                            isDarkMode = currentState.isDarkMode,
-                            onToggleDarkMode = vm::toggleDarkMode
-                        )
-
-                        HorizontalDivider(
-                            modifier = Modifier.padding(top = 8.dp, bottom = 16.dp)
-                        )
-
-                        Text(
-                            text = "News sites",
-                            style = Typography.titleMedium
-                        )
-
-                        Spacer(modifier = Modifier.height(8.dp))
-
-                        LazyColumn(
-                            verticalArrangement = Arrangement.spacedBy(8.dp)
-                        ) {
-                            items(
-                                items = orderedItems,
-                                key = { it }
-                            ) { newsSite ->
-                                NewsSiteItem(
-                                    newsSite = newsSite,
-                                    isSelected = newsSite in selectedNewsSites,
-                                    onCheckChange = { isChecked ->
-                                        if (isChecked) {
-                                            selectedNewsSites.add(newsSite)
-                                        } else {
-                                            selectedNewsSites.remove(newsSite)
-                                        }
-                                    }
-                                )
+                is SettingsState.Content -> {
+                    SettingsContent(
+                        vm = vm,
+                        state = currentState,
+                        selectedNewsSites = selectedNewsSites,
+                        onCheckChange = { newsSite, isChecked ->
+                            if (isChecked) {
+                                selectedNewsSites.add(newsSite)
+                            } else {
+                                selectedNewsSites.remove(newsSite)
                             }
                         }
+                    )
+                }
 
-                        HorizontalDivider()
-                    }
-                },
-                confirmButton = {
-                    Button(onClick = {
-                        vm.selectNewsSite(selectedNewsSites.joinToString(","))
-                        onDismissRequest()
-                    }) {
-                        Text("Confirm")
-                    }
-                },
-                modifier = Modifier.heightIn(max = (screenSize.height * 0.7f).dp)
-            )
-        }
-    }
+            }
+
+        },
+        confirmButton = {
+            Button(onClick = {
+                vm.selectNewsSite(selectedNewsSites.joinToString(","))
+                onDismissRequest()
+            }) {
+                Text("Confirm")
+            }
+        },
+        modifier = Modifier.heightIn(max = (screenSize.height * 0.7f).dp)
+    )
 }
 
 @Composable
@@ -153,6 +113,77 @@ fun DarkModeItem(
         )
     }
 
+}
+
+@Composable
+private fun SettingsContent(
+    vm: SettingsViewModel,
+    state: SettingsState.Content,
+    selectedNewsSites: List<String>,
+    onCheckChange: (String, Boolean) -> Unit
+) {
+    Column {
+        HorizontalDivider(
+            modifier = Modifier.padding(bottom = 8.dp)
+        )
+
+        DarkModeItem(
+            isDarkMode = state.isDarkMode,
+            onToggleDarkMode = vm::toggleDarkMode
+        )
+
+        HorizontalDivider(
+            modifier = Modifier.padding(top = 8.dp, bottom = 16.dp)
+        )
+
+        Text(
+            text = "News sites",
+            style = Typography.titleMedium
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        NewsSitesList(
+            state = state,
+            selectedNewsSites = selectedNewsSites,
+            onCheckChange = { newsSite, isChecked ->
+                onCheckChange(newsSite, isChecked)
+            }
+        )
+
+        HorizontalDivider()
+    }
+}
+
+@Composable
+private fun NewsSitesList(
+    state: SettingsState.Content,
+    selectedNewsSites: List<String>,
+    onCheckChange: (String, Boolean) -> Unit
+) {
+    val orderedItems = remember(state.newsSites, selectedNewsSites) {
+        state.newsSites
+            .sortedByDescending { it in selectedNewsSites }
+            .filter { it.isNotEmpty() }
+            .distinct()
+    }
+
+    LazyColumn(
+        verticalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        items(
+            items = orderedItems,
+            key = { it }
+        ) { newsSite ->
+            NewsSiteItem(
+                newsSite = newsSite,
+                isSelected = newsSite in selectedNewsSites,
+                onCheckChange = { isChecked ->
+                    onCheckChange(newsSite, isChecked)
+                }
+            )
+        }
+    }
 }
 
 @Composable
