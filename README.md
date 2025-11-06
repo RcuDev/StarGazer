@@ -260,14 +260,32 @@ ViewModels delegate to Presenters but manage Android lifecycle:
 
 ```kotlin
 class PostViewModel(private val presenter: PostPresenter) : ViewModel() {
-    private val events = MutableSharedFlow<PostEvent>()
-    
-    val state: StateFlow<PostState> = presenter.present(events)
-        .map { it.first }
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), PostState.Loading)
-    
-    val effects: Flow<PostEffect> = presenter.present(events)
-        .flatMapLatest { it.second }
+    private val events = MutableSharedFlow<PostEvent>(
+        extraBufferCapacity = 64,
+        onBufferOverflow = BufferOverflow.DROP_OLDEST
+    )
+    private val _effects = MutableSharedFlow<PostEffect>(
+        extraBufferCapacity = 64,
+        onBufferOverflow = BufferOverflow.DROP_OLDEST
+    )
+    val effects: Flow<PostEffect> = _effects
+
+
+    val state: StateFlow<PostState> = viewModelScope.launchMolecule(
+        mode = RecompositionMode.Immediate
+    ) {
+        val (state, effects) = presenter.present(events)
+
+        LaunchedEffect(Unit) {
+            effects.collect { effect ->
+                _effects.emit(effect)
+            }
+        }
+
+        state
+
+    }
+
 }
 ```
 
