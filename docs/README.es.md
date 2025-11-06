@@ -5,24 +5,87 @@
 
 [English](../README.md) | [Español](README.es.md)
 
-StarGazer es una aplicación KMM para Android e iOS construida utilizando Kotlin Multiplatform. Utiliza la API de [spaceflightnewsapi.net](https://www.spaceflightnewsapi.net/) para mostrar una lista de artículos, blogs y reportes sobre vuelos espaciales.
+**StarGazer** es una aplicación moderna de Kotlin Multiplatform (KMM) para Android e iOS que muestra contenido relacionado con el espacio utilizando la API de [spaceflightnewsapi.net](https://www.spaceflightnewsapi.net/). Construida con tecnologías de vanguardia y un patrón de arquitectura limpia, demuestra las mejores prácticas para el desarrollo móvil multiplataforma.
 
-## Características
+## ✨ Características
 
-*   Multiplataforma: Disponible tanto en Android como en iOS.
-*   Interfaz moderna: Una interfaz de usuario limpia e intuitiva con unos filtros superiores para acceder fácilmente a las diferentes secciones.
-*   Tres secciones:
-    *   **Artículos:** Muestra una lista de artículos relacionados con los vuelos espaciales.
-    *   **Blogs:** Presenta una colección de publicaciones de blogs sobre la exploración espacial.
-    *   **Reportes:** Proporciona acceso a informes sobre misiones y descubrimientos espaciales.
-*   Vistas detalladas: Al tocar cualquier publicación, se abre una vista detallada con el contenido completo en una web embedida.
-*   Modularizado:
-    *   **composeApp**: Contiene la aplicación ejecutable donde en Android se ejecuta una **MainActivity** con el Composable general de la app y en iOS se carga el **MainViewController** cargando igualmente el mismo Composable.
-    *   **posts**: Pantalla donde se muestran los post, settings y el detalle del post en un webview.
-    *   **ds**: Contiene la tipografía, colores y Theme de la aplicación.
-    *   **network**: Proporciona el cliente (Ktor), que servirá para para realizar las peticiones.
-    *   **storage**: Uso de DataStore para las preferencias como el modo oscuro, tipo de post seleccionado y filtro por web de la noticia del post.
-    *   **utils**: proporciona métodos que pueden ser usados en varios módulos y cuya característica es que necesitan implementaciones distintas para Android e iOS.
+*   **🌍 Multiplataforma**: Experiencia nativa en Android e iOS desde un único código base
+*   **🎨 Interfaz Moderna**: Interfaz limpia e intuitiva construida completamente con Jetpack Compose Multiplatform
+*   **📰 Tres Secciones de Contenido**:
+    *   **Artículos**: Lista curada de artículos relacionados con el espacio
+    *   **Blogs**: Publicaciones de blogs sobre exploración espacial
+    *   **Reportes**: Informes detallados sobre misiones y descubrimientos espaciales
+*   **🔍 Filtrado Avanzado**: Filtra contenido por fuente de noticias y tipo de contenido
+*   **📱 Vistas Detalladas**: WebView integrado para contenido completo del artículo
+*   **🌓 Modo Oscuro**: Tema consciente del sistema con alternancia manual
+*   **⚡ Arquitectura Reactiva**: Flujo de Datos Unidireccional (UDF) con Molecule
+*   **🧪 Testing Completo**: Tests unitarios y de UI con Turbine y Mokkery
+
+## 🏗️ Arquitectura
+
+StarGazer implementa una arquitectura híbrida **ViewModel + Presenter + Molecule** que combina lo mejor de ambos mundos:
+
+```
+┌─────────────────────────────────────────┐
+│      Capa UI (Compose)                  │
+│  • Solo renderiza estado                │
+│  • Emite eventos                        │
+│  • Observa StateFlow<State>             │
+│  • Observa Flow<Effect> para navegación │
+└──────────────┬──────────▲───────────────┘
+               │ Eventos  │ Estado/Efectos
+┌──────────────▼──────────┴───────────────┐
+│           ViewModel                      │
+│  • Gestiona ciclo de vida (viewModelScope) │
+│  • Canaliza eventos desde la UI         │
+│  • Expone StateFlow vía launchMolecule  │
+│  • Procesa efectos del Presenter        │
+└──────────────┬──────────▲───────────────┘
+               │ Eventos  │ Estado/Efectos
+┌──────────────▼──────────┴───────────────┐
+│       Presenter (@Composable)            │
+│  • Lógica de negocio con Molecule       │
+│  • Recibe Flow<Event>                    │
+│  • Retorna Pair<State, Flow<Effect>>    │
+│  • Lógica reactiva pura (testeable)     │
+└──────────────┬──────────▲───────────────┘
+               │ Llamadas │ Resultados
+┌──────────────▼──────────┴───────────────┐
+│        Capa Dominio/Datos                │
+│  • Servicios, Repositorios, DataStore   │
+└─────────────────────────────────────────┘
+```
+
+### ¿Por Qué Esta Arquitectura?
+
+1. **ViewModel** proporciona `viewModelScope` para gestión automática del ciclo de vida
+2. **Presenter** contiene lógica reactiva pura con Molecule (testeable sin UI)
+3. **Enfoque híbrido** aprovecha las fortalezas de ambos sin duplicar responsabilidades
+4. **Escalable** y permite crear Presenters complejos reutilizables
+
+## 📦 Estructura de Módulos
+
+```
+StarGazer/
+├── composeApp/          # Aplicación principal (Android/iOS)
+│   ├── App.kt           # Punto de entrada con configuración Koin
+│   ├── navigation/      # Grafo de navegación Type-Safe
+│   └── ui/components/   # Componentes compartidos (TopBar con Presenter)
+│
+├── posts/               # Módulo de característica: Posts
+│   ├── data/            # Implementaciones de servicios
+│   ├── domain/          # Interfaces y modelos
+│   ├── ui/
+│   │   ├── posts/       # Pantalla de posts (Presenter + ViewModel)
+│   │   ├── settings/    # Dropdown de ajustes (Presenter + ViewModel)
+│   │   └── webview/     # WebView para detalles del artículo
+│   └── di/              # Inyección de dependencias Koin
+│
+├── ds/                  # Sistema de Diseño (colores, tipografía, tema)
+├── network/             # Configuración del cliente HTTP Ktor
+├── storage/             # DataStore para preferencias
+└── utils/               # Utilidades multiplataforma
+```
 
 ## Capturas de pantalla
 
@@ -46,60 +109,213 @@ StarGazer es una aplicación KMM para Android e iOS construida utilizando Kotlin
 
 ## Tecnologías
 
-*   Kotlin Multiplatform
-*   Jetpack Compose (Android e iOS)
-*   Compose Navigation (Tipado Seguro)
-*   Ktor (Redes)
-*   Koin (Inyección de Dependencias)
-*   Coil (Imágenes)
-*   DataStore (Preferencias)
-*   Mokkery (Testing Mocks)
+### Tecnologías Core
+*   **Kotlin 2.1.0** - Lenguaje moderno, conciso y seguro
+*   **Kotlin Multiplatform** - Comparte código entre Android e iOS
+*   **Jetpack Compose Multiplatform 1.9.2** - Framework de UI declarativa
 
-## Testing
+### Arquitectura y Gestión de Estado
+*   **Molecule 2.2.0** - Construye un stream StateFlow usando Jetpack Compose
+*   **Compose Navigation** - Navegación type-safe entre pantallas
+*   **Flujo de Datos Unidireccional (UDF)** - Gestión de estado predecible
 
-La idea de los cambios aplicados para los test, es que estos puedan ser 100% Multiplatform.
+### Networking y Datos
+*   **Ktor 3.3.1** - Cliente HTTP multiplataforma
+*   **Kotlinx Serialization** - Parsing de JSON
+*   **DataStore 1.1.7** - Persistencia de preferencias y ajustes
 
-Para el mock de los datos, se descartó el uso de **MockK** debido a que la única parte compatible con Multiplatform es **mockk-common** y lleva sin mantenerse desde 2022, a parte de los múltiples errores que da sin dejar muy clara la solución.
+### Inyección de Dependencias
+*   **Koin 4.1.1** - Framework DI ligero con soporte KMM
 
-Como alternativa actualizada y con un uso similar, decidí usar **[mokkery](https://mokkery.dev/)**, disponiendo de los mismos métodos y capacidad.
+### UI y Recursos
+*   **Coil 3.x** - Carga de imágenes con caché
+*   **Material3** - Componentes modernos de Material Design
 
-En el módulo **composeApp** se han añadido test de compose para validar los distintos estados de la **TopBar**, validando tanto sus estados iniciales como su actualización cuando los datos en **DataStore** se modifican.
+### Testing
+*   **Kotlin Test** - Framework de testing multiplataforma
+*   **Turbine 1.1.0** - Librería de testing para Kotlin Flows
+*   **Mokkery 2.10.2** - Librería moderna de mocking (reemplaza a MockK sin mantenimiento)
+*   **Compose UI Test** - Testing de UI para Compose
 
-*   [TopBarTest (UI)](../composeApp/src/commonTest/kotlin/com/rcudev/stargazer/ui/components/TopBarTest.kt)
+## Estrategia de Testing
 
-En el módulo **posts**, se han añadido test para validar los servicios de **info** y de **posts**. Se validan tanto un resultado positivo como que los resultados del mapper sean correctos y coincidan con los datos fake. A parte, se añaden test de compose para validar el **switch** que cambia del modo claro al modo oscuro.
+StarGazer implementa un enfoque completo de testing que cubre todas las capas de la arquitectura:
 
-*   [InfoServiceTest](../posts/src/commonTest/kotlin/com/rcudev/posts/data/remote/InfoServiceTest.kt)
-*   [PostServiceTest](../posts/src/commonTest/kotlin/com/rcudev/posts/data/remote/PostServiceTest.kt)
-*   [DarkModeItemTest (UI)](../posts/src/commonTest/kotlin/com/rcudev/posts/ui/DarkModeItemTest.kt)
-
-En cuanto a los test de compose, en ambos composables se le inyecta por **koin** las preferencias, por lo que en las primeras ejecuciones fallaba. Para solucionarlo, creé un composable para crear un contexto donde se dispongan de las instancias necesarias:
+### 🎯 Tests de Presenter (con Turbine)
+Tests para lógica de negocio usando Molecule y Turbine para validar emisiones de estado y efectos:
 
 ```kotlin
-import androidx.compose.runtime.Composable
-import com.rcudev.posts.di.getDiModules
-import org.koin.compose.KoinApplication
-
-@Composable
-internal fun KoinTestFrame(
-    content: @Composable () -> Unit
-) {
-    val diModules = getDiModules()
-
-    KoinApplication(application = {
-        modules(diModules)
-    }) {
-        content()
+@Test
+fun emitsLoadingStateInitiallyAndThenContentWithPosts() = runTest {
+    // Given - PostService retorna una lista de posts
+    val mockResponse = Posts(count = 2, results = mockPosts)
+    every { suspend { postService.getArticles(...) } } returns Result.success(mockResponse)
+    
+    val flow = moleculeFlow(RecompositionMode.Immediate) {
+        presenter.present(events)
+    }
+    
+    // When - Recolectando el estado
+    flow.test {
+        // Then - Primera emisión debe ser Loading
+        val loadingState = awaitItem().first
+        assertIs<PostState.Loading>(loadingState)
+        
+        // Then - Segunda emisión debe ser Content con posts
+        val contentState = awaitItem().first as PostState.Content
+        assertEquals(2, contentState.posts.size)
     }
 }
 ```
 
+**Cobertura de Tests:**
+*   [PostPresenterTest](../posts/src/commonTest/kotlin/com/rcudev/posts/ui/posts/PostPresenterTest.kt) - Lógica del presenter de pantalla de posts
+*   [SettingsPresenterTest](../posts/src/commonTest/kotlin/com/rcudev/posts/ui/settings/SettingsPresenterTest.kt) - Lógica del presenter de ajustes
+*   [TopBarPresenterTest](../composeApp/src/commonTest/kotlin/com/rcudev/stargazer/ui/components/TopBarPresenterTest.kt) - Lógica del presenter de TopBar
+
+### 🌐 Tests de Servicios (con Mokkery)
+Tests de integración para servicios API usando Mokkery para mocking:
+
+*   [InfoServiceTest](../posts/src/commonTest/kotlin/com/rcudev/posts/data/remote/InfoServiceTest.kt) - Validación de API Info
+*   [PostServiceTest](../posts/src/commonTest/kotlin/com/rcudev/posts/data/remote/PostServiceTest.kt) - Validación de API Posts
+
+### 🎨 Tests de Componentes UI
+Tests de UI Compose validando comportamiento de componentes y cambios de estado:
+
+*   [TopBarTest](../composeApp/src/commonTest/kotlin/com/rcudev/stargazer/ui/components/TopBarTest.kt) - Estados e interacciones de TopBar
+*   [DarkModeItemTest](../posts/src/commonTest/kotlin/com/rcudev/posts/ui/DarkModeItemTest.kt) - Toggle de modo oscuro
+
+### ¿Por Qué Mokkery?
+
+**MockK** fue descartado porque `mockk-common` (la versión multiplataforma) no ha sido mantenida desde 2022 y causa numerosos problemas de compatibilidad. **Mokkery** es la alternativa moderna y activamente mantenida con API similar y soporte completo para KMM.
+
 ## API
 
-Esta aplicación utiliza la API gratuita y abierta [spaceflightnewsapi.net](https://www.spaceflightnewsapi.net/).
+Esta aplicación utiliza la API gratuita y abierta [spaceflightnewsapi.net](https://www.spaceflightnewsapi.net/) para obtener contenido relacionado con el espacio.
+
+## 🚀 Comenzar
+
+### Prerequisitos
+*   **Android Studio** Hedgehog | 2023.1.1 o más reciente
+*   **Xcode** 15+ (para desarrollo iOS)
+*   **JDK** 17 o superior
+*   **Kotlin** 2.1.0
+
+### Ejecutar el Proyecto
+
+#### Android
+1. Abre el proyecto en Android Studio
+2. Selecciona la configuración `composeApp`
+3. Ejecuta en un dispositivo o emulador Android
+
+#### iOS
+1. Abre el proyecto en Android Studio
+2. Selecciona la configuración `iosApp`
+3. Ejecuta en un simulador o dispositivo iOS
+
+Alternativamente, abre `iosApp/iosApp.xcodeproj` en Xcode y ejecuta desde ahí.
+
+## 📚 Conceptos Clave
+
+### Patrón Contract
+Cada característica define un **Contract** que contiene:
+*   `State`: Estado inmutable de UI (sealed interface)
+*   `Event`: Interacciones del usuario (sealed interface)
+*   `Effect`: Efectos de una sola vez como navegación (sealed interface)
+
+Ejemplo de `PostContract.kt`:
+```kotlin
+sealed interface PostState {
+    data object Loading : PostState
+    data object Error : PostState
+    data class Content(val posts: List<Post>) : PostState
+}
+
+sealed interface PostEvent {
+    data class OnPostClick(val url: String) : PostEvent
+    data object LoadNextPage : PostEvent
+}
+
+sealed interface PostEffect {
+    data class NavigateToWebView(val url: String) : PostEffect
+}
+```
+
+### Presenter con Molecule
+Los Presenters son funciones `@Composable` que usan Molecule para crear estado reactivo:
+
+```kotlin
+@Composable
+fun present(events: Flow<PostEvent>): Pair<PostState, Flow<PostEffect>> {
+    var state by remember { mutableStateOf<PostState>(PostState.Loading) }
+    val effects = remember { MutableSharedFlow<PostEffect>() }
+    
+    // Lógica de negocio reactiva aquí
+    
+    return state to effects
+}
+```
+
+### ViewModel como Gestor de Ciclo de Vida
+Los ViewModels delegan a los Presenters pero gestionan el ciclo de vida de Android:
+
+```kotlin
+class PostViewModel(private val presenter: PostPresenter) : ViewModel() {
+    private val events = MutableSharedFlow<PostEvent>()
+    
+    val state: StateFlow<PostState> = presenter.present(events)
+        .map { it.first }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), PostState.Loading)
+    
+    val effects: Flow<PostEffect> = presenter.present(events)
+        .flatMapLatest { it.second }
+}
+```
+
+## 🛠️ Desarrollo
+
+### Estilo de Código
+*   Seguir las [Convenciones de Código de Kotlin](https://kotlinlang.org/docs/coding-conventions.html)
+*   Usar nombres significativos para variables y funciones
+*   Añadir comentarios KDoc para APIs públicas
+*   Mantener las funciones pequeñas y enfocadas
+
+### Añadir una Nueva Característica
+1. Crear módulo de característica en el paquete apropiado
+2. Definir Contract (State, Event, Effect)
+3. Implementar Presenter con lógica de negocio
+4. Crear ViewModel como puente de ciclo de vida
+5. Construir UI Composable
+6. Escribir tests (Presenter, Service, UI)
+7. Añadir al grafo de navegación
+
+## 📈 Roadmap
+
+- [x] Arquitectura híbrida ViewModel + Presenter
+- [x] Navegación type-safe
+- [x] Testing completo con Turbine
+- [x] Soporte para modo oscuro
+- [ ] Caché offline
+- [ ] Funcionalidad de búsqueda
+- [ ] Favoritos/Marcadores
+- [ ] Compartir artículos
+- [ ] Notificaciones push
 
 ## WIP
 
-*   Mejoras en la UI/UX.
-*   Añadir mas test.
-*   Pequeños fix.
+*   Mejoras en la UI/UX
+*   Optimizaciones de rendimiento
+*   Cobertura adicional de tests
+*   Pipeline CI/CD
+
+## 📄 Licencia
+
+Este proyecto está disponible bajo la Licencia MIT.
+
+## 🤝 Contribuir
+
+¡Las contribuciones son bienvenidas! Por favor, siéntete libre de enviar un Pull Request.
+
+---
+
+**Construido con ❤️ usando Kotlin Multiplatform**
