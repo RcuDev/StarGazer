@@ -6,6 +6,7 @@ import androidx.compose.ui.geometry.Size
 import coil3.ImageLoader
 import coil3.compose.LocalPlatformContext
 import coil3.disk.DiskCache
+import coil3.memory.MemoryCache
 import coil3.network.ktor3.KtorNetworkFetcherFactory
 import coil3.request.crossfade
 import okio.Path.Companion.toPath
@@ -18,7 +19,12 @@ val LocalImageLoader = compositionLocalOf<ImageLoader> { error("No image loader 
 fun getImageLoader() = with(LocalPlatformContext.current) {
     ImageLoader.Builder(this)
         .components {
-            add(factory = KtorNetworkFetcherFactory())
+            add(KtorNetworkFetcherFactory())
+        }
+        .memoryCache {
+            MemoryCache.Builder()
+                .maxSizePercent(context = this@with, percent = 0.25)
+                .build()
         }
         .diskCache(
             DiskCache.Builder()
@@ -26,6 +32,6 @@ fun getImageLoader() = with(LocalPlatformContext.current) {
                 .maxSizePercent(0.5)
                 .build()
         )
-        .crossfade(true)
+        .crossfade(300)
         .build()
 }
