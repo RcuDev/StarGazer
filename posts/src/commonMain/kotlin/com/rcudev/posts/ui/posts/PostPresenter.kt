@@ -40,8 +40,6 @@ class PostPresenter(
 
         val effectChannel = remember {
             MutableSharedFlow<PostEffect>(
-                replay = 0,
-                extraBufferCapacity = Int.MAX_VALUE,
                 onBufferOverflow = BufferOverflow.DROP_OLDEST
             )
         }
