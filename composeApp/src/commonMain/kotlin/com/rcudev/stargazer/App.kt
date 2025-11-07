@@ -12,9 +12,9 @@ import com.rcudev.posts.di.getPostDiModules
 import com.rcudev.stargazer.di.getDiModules
 import com.rcudev.stargazer.ui.AppContent
 import com.rcudev.storage.DARK_MODE
-import com.rcudev.utils.GetImageLoader
 import com.rcudev.utils.LocalImageLoader
 import com.rcudev.utils.LocalScreenSize
+import com.rcudev.utils.getImageLoader
 import com.rcudev.utils.getPlatformSize
 import kotlinx.coroutines.flow.map
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -42,7 +42,7 @@ internal fun App(
             colorScheme = colorScheme.value
         ) {
             CompositionLocalProvider(LocalScreenSize provides getPlatformSize()) {
-                CompositionLocalProvider(LocalImageLoader provides GetImageLoader()) {
+                CompositionLocalProvider(LocalImageLoader provides getImageLoader()) {
                     AppContent(
                         finishSplash = finishSplash
                     )

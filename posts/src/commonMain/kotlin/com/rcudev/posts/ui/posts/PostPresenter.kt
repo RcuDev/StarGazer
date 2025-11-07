@@ -40,9 +40,8 @@ class PostPresenter(
 
         val effectChannel = remember {
             MutableSharedFlow<PostEffect>(
-                replay = 0,
-                extraBufferCapacity = Int.MAX_VALUE,
-                onBufferOverflow = BufferOverflow.DROP_OLDEST
+                extraBufferCapacity = 1,
+                onBufferOverflow = BufferOverflow.DROP_LATEST
             )
         }
 
@@ -51,31 +50,28 @@ class PostPresenter(
             preferences.data
                 .distinctUntilChangedBy { it }
                 .collectLatest { prefs ->
+                    val postTypeFilter = PostType.entries.find { it.type == prefs[POST_TYPE_FILTER] } ?: PostType.ARTICLES
                     val newsSiteFilter = prefs[NEWS_SITES_FILTER]
-                    val postTypeFilter = PostType.entries.find { it.type == prefs[POST_TYPE_FILTER] }
 
-                    postTypeFilter?.let {
-                        newsSitesSelected = newsSiteFilter.orEmpty()
-                        postTypeSelected = postTypeFilter
-                        posts = null // Reset Posts
-                        nextPageToLoad = 0 // Reset page
-                        showError = false
-                        showLoadPageError = false
+                    newsSitesSelected = newsSiteFilter.orEmpty()
+                    postTypeSelected = postTypeFilter
+                    posts = null // Reset Posts
+                    nextPageToLoad = 0 // Reset page
+                    showError = false
+                    showLoadPageError = false
 
-                        // Load post with updated filters
-                        loadPosts(
-                            page = 0,
-                            postType = postTypeSelected,
-                            newsSitesFilter = newsSitesSelected,
-                            onSuccess = { newPosts ->
-                                posts = newPosts
-                            },
-                            onError = {
-                                showError = true
-                            }
-                        )
-
-                    }
+                    // Load post with updated filters
+                    loadPosts(
+                        page = 0,
+                        postType = postTypeSelected,
+                        newsSitesFilter = newsSitesSelected,
+                        onSuccess = { newPosts ->
+                            posts = newPosts
+                        },
+                        onError = {
+                            showError = true
+                        }
+                    )
                 }
         }
 

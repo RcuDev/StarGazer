@@ -15,7 +15,7 @@ val LocalScreenSize = compositionLocalOf<Size> { error("No screen size provided"
 val LocalImageLoader = compositionLocalOf<ImageLoader> { error("No image loader provided") }
 
 @Composable
-fun GetImageLoader() = with(LocalPlatformContext.current) {
+fun getImageLoader() = with(LocalPlatformContext.current) {
     ImageLoader.Builder(this)
         .components {
             add(factory = KtorNetworkFetcherFactory())
