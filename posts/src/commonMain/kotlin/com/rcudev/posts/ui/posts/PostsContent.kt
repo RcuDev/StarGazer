@@ -144,12 +144,10 @@ private fun PostItem(
 private fun PostImage(
     post: Post
 ) {
-    val imageLoader = LocalImageLoader.current
     var error by remember { mutableStateOf(false) }
 
     if (!error) {
         AsyncImage(
-            imageLoader = imageLoader,
             model = post.imageUrl,
             contentDescription = post.title,
             contentScale = ContentScale.Crop,
