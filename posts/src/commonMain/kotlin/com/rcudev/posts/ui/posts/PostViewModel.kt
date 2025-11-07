@@ -5,11 +5,17 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import app.cash.molecule.RecompositionMode
 import app.cash.molecule.launchMolecule
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 
+@OptIn(ExperimentalCoroutinesApi::class)
 class PostViewModel(
     private val presenter: PostPresenter
 ) : ViewModel() {
@@ -18,27 +24,24 @@ class PostViewModel(
         extraBufferCapacity = 64,
         onBufferOverflow = BufferOverflow.DROP_OLDEST
     )
-    private val _effects = MutableSharedFlow<PostEffect>(
-        extraBufferCapacity = 64,
-        onBufferOverflow = BufferOverflow.DROP_OLDEST
-    )
-    val effects: Flow<PostEffect> = _effects
 
-
-    val state: StateFlow<PostState> = viewModelScope.launchMolecule(
-        mode = RecompositionMode.Immediate
-    ) {
-        val (state, effects) = presenter.present(events)
-
-        LaunchedEffect(Unit) {
-            effects.collect { effect ->
-                _effects.emit(effect)
-            }
+    private val presentationResult: Flow<Pair<PostState, Flow<PostEffect>>> =
+        viewModelScope.launchMolecule(
+            mode = RecompositionMode.Immediate
+        ) {
+            presenter.present(events)
         }
 
-        state
+    val state: StateFlow<PostState> = presentationResult
+        .map { it.first }
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5_000),
+            initialValue = PostState.Loading
+        )
 
-    }
+    val effects: Flow<PostEffect> = presentationResult
+        .flatMapLatest { it.second }
 
     fun loadNextPage() {
         events.tryEmit(PostEvent.LoadNextPage)
