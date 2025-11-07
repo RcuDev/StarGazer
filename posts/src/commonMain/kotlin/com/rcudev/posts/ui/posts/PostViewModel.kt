@@ -26,7 +26,7 @@ class PostViewModel(
     private val presentationResult = viewModelScope.launchMolecule(
         mode = RecompositionMode.Immediate
     ) {
-        presenter.present(events)  // ✅ Solo se llama UNA vez
+        presenter.present(events)
     }
 
     val state: StateFlow<PostState> = presentationResult
