@@ -41,7 +41,6 @@ import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import com.rcudev.ds.theme.Typography
 import com.rcudev.posts.domain.model.Post
-import com.rcudev.utils.LocalImageLoader
 import com.rcudev.utils.logMessage
 
 @Composable
