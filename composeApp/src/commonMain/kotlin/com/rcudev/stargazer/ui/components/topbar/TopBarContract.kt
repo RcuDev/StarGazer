@@ -1,6 +1,7 @@
 package com.rcudev.stargazer.ui.components.topbar
 
 sealed interface TopBarState {
+    data object Idle : TopBarState
     data class Content(
         val selectedPostType: String
     ) : TopBarState
