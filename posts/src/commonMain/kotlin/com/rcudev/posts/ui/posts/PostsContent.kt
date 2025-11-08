@@ -81,6 +81,7 @@ internal fun PostsContent(
     // Auto-load on end reached
     if (endReached.value && !loadingNextPage) {
         LaunchedEffect(Unit) {
+            endReached.value = false
             onLoadNextPage()
         }
     }

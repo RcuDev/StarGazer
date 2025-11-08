@@ -84,7 +84,7 @@ class PostPresenter(
                     PostEvent.LoadNextPage -> {
                         if (!loadingNextPage && posts != null) {
                             loadingNextPage = true
-                            nextPageToLoad += 1
+                            nextPageToLoad ++
 
                             loadPosts(
                                 page = nextPageToLoad,
@@ -97,6 +97,7 @@ class PostPresenter(
                                 onError = {
                                     showLoadPageError = true
                                     loadingNextPage = false
+                                    nextPageToLoad --
                                 }
                             )
                         }
