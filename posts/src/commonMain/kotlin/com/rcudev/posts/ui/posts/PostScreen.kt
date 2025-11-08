@@ -38,8 +38,14 @@ internal fun PostScreen(
     }
 
     LaunchedEffect(state) {
+        if (state is PostState.Content && (state as PostState.Content).loadingNextPage) {
+            showSnackBar("Loading more post...")
+        }
+    }
+
+    LaunchedEffect(state) {
         if (state is PostState.Content && (state as PostState.Content).showLoadPageError) {
-            showSnackBar("Error loading more posts")
+            showSnackBar("Error loading more posts!")
             vm.dismissLoadPageError()
         }
     }
