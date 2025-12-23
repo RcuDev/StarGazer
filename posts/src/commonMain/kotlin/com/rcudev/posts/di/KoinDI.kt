@@ -11,6 +11,7 @@ import com.rcudev.posts.ui.settings.SettingsPresenter
 import com.rcudev.posts.ui.settings.SettingsViewModel
 import com.rcudev.storage.dataStoragePreferences
 import org.koin.core.module.Module
+import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.module
 
@@ -29,8 +30,8 @@ private val services = module {
 }
 
 private val presenters = module {
-    singleOf(::PostPresenter)
-    singleOf(::SettingsPresenter)
+    factoryOf(::PostPresenter)
+    factoryOf(::SettingsPresenter)
 }
 
 private val viewModels = module {
